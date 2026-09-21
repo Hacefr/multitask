@@ -1,0 +1,2071 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Multi TASK</title>
+    <style>
+        /* AUTHENTIC RETRO XP CURSOR */
+        * {
+            cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 22 22"><path d="M1 1 L1 17 L5.5 13 L8.5 20 L11 19 L8 12 L13.5 12 Z" fill="white" stroke="black" stroke-width="1.2" stroke-linejoin="round"/></svg>'), auto !important;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            background: #111111;
+            color: black;
+            font-family: "Tahoma", sans-serif;
+            overflow: hidden;
+            user-select: none;
+        }
+
+        /* 1. START SCREEN (RETRO FLASH / XP WINDOW) */
+        #start-screen {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 480px;
+            background: #ece9d8;
+            border: 4px solid #000000;
+            border-radius: 6px;
+            padding: 25px;
+            box-shadow: 6px 6px 0px #000000;
+            text-align: center;
+            z-index: 100;
+        }
+
+        #main-logo {
+            max-width: 380px;
+            width: 90%;
+            display: block;
+            margin: 0 auto 12px auto;
+        }
+
+        .wacky-fallback-title {
+            display: none;
+            font-family: Impact, "Comic Sans MS", fantasy;
+            font-size: 42px;
+            margin-bottom: 5px;
+            letter-spacing: 1px;
+            transform: rotate(-3deg);
+        }
+        .title-multi {
+            color: #d86812;
+            text-shadow: 2px 2px 0px #000;
+            margin-right: 4px;
+        }
+        .title-task {
+            color: #a472c9;
+            text-shadow: 2px 2px 0px #000;
+        }
+
+        .high-score-banner {
+            font-family: monospace;
+            font-size: 15px;
+            font-weight: bold;
+            color: #006622;
+            margin: 12px 0;
+            background: #fff;
+            padding: 6px;
+            border: 2px solid #000;
+        }
+
+        .menu-btn {
+            padding: 8px 16px;
+            font-family: Impact, sans-serif;
+            font-size: 15px;
+            letter-spacing: 1px;
+            margin: 4px;
+            border-radius: 3px;
+            border: 2px solid #000;
+            box-shadow: 3px 3px 0px #000;
+            cursor: pointer;
+        }
+        .menu-btn:active {
+            transform: translate(2px, 2px);
+            box-shadow: 1px 1px 0px #000;
+        }
+        .btn-story { background: #ffffff; color: black; }
+        .btn-custom { background: #3593ff; color: white; }
+        .btn-replay { background: #ff5555; color: white; }
+        .btn-multi { background: #ffaa00; color: black; display: block; width: calc(100% - 10px); margin: 12px auto 0 auto; font-size: 17px; }
+
+        /* REPLAY BANNER */
+        #replay-banner {
+            display: none;
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            background: #ff0000;
+            border: 3px solid #000000;
+            color: white;
+            font-family: monospace;
+            font-weight: bold;
+            font-size: 13px;
+            padding: 6px 14px;
+            box-shadow: 3px 3px 0px #000;
+            z-index: 4000;
+        }
+
+        #virtual-cursor {
+            display: none;
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 22px;
+            height: 22px;
+            pointer-events: none;
+            z-index: 5000;
+        }
+        #virtual-cursor.clicking { transform: scale(0.85); }
+
+        /* 2. CUSTOM NIGHT MENU */
+        #custom-night-menu {
+            display: none;
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: #1a1a1a;
+            color: white;
+            font-family: "Tahoma", sans-serif;
+            box-sizing: border-box;
+            padding: 20px 30px;
+            z-index: 200;
+            overflow-y: auto;
+        }
+
+        .custom-title { font-family: Impact, sans-serif; font-size: 26px; color: #ffaa00; letter-spacing: 1px; margin-bottom: 2px; }
+        .custom-subtitle { color: #aaa; font-family: monospace; font-size: 12px; margin-bottom: 14px; }
+
+        .roster-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            max-width: 950px;
+        }
+
+        .char-card {
+            background: #ece9d8;
+            color: black;
+            border: 3px solid #000;
+            border-radius: 4px;
+            padding: 8px;
+            text-align: center;
+            box-shadow: 3px 3px 0px #000;
+        }
+        .char-card.active {
+            background: #d4ffd4;
+            border-color: #008820;
+        }
+
+        .char-name { font-size: 12px; font-weight: bold; margin-bottom: 2px; }
+        .char-desc { font-size: 10px; color: #555; height: 26px; margin-bottom: 6px; line-height: 1.2; font-family: monospace; }
+        .char-toggle-row { display: flex; justify-content: center; align-items: center; gap: 8px; }
+        .char-val { font-size: 20px; font-family: monospace; font-weight: bold; color: #888; min-width: 25px; }
+        .char-card.active .char-val { color: #008820; }
+
+        .toggle-btn {
+            background: #fff;
+            border: 2px solid #000;
+            color: black;
+            padding: 2px 8px;
+            font-weight: bold;
+            font-size: 11px;
+            cursor: pointer;
+            box-shadow: 2px 2px 0px #000;
+        }
+        .toggle-btn:active { transform: translate(1px, 1px); box-shadow: 1px 1px 0px #000; }
+
+        .custom-bottom-bar { margin: 15px 0; display: flex; align-items: center; gap: 15px; }
+        #ready-btn {
+            background: #00ff88;
+            border: 3px solid #000;
+            color: black;
+            font-size: 20px;
+            font-weight: bold;
+            font-family: Impact, sans-serif;
+            letter-spacing: 2px;
+            padding: 6px 32px;
+            cursor: pointer;
+            box-shadow: 4px 4px 0px #000;
+        }
+
+        /* 3. GAMEPLAY CANVAS */
+        #game-container {
+            display: none;
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: #050505;
+        }
+
+        canvas { display: block; position: absolute; top: 0; left: 0; }
+        #mazeCanvas { z-index: 1; }
+        #topCanvas { z-index: 600; pointer-events: none; }
+
+        #hud {
+            position: absolute;
+            top: 48px;
+            left: 20px;
+            color: #fff;
+            background: #000;
+            padding: 4px 10px;
+            border: 2px solid #fff;
+            font-family: monospace;
+            font-weight: bold;
+            font-size: 16px;
+            z-index: 10;
+        }
+
+        #duck-hud {
+            display: none;
+            position: absolute;
+            top: 48px;
+            right: 25px;
+            color: #000;
+            font-family: monospace;
+            font-size: 14px;
+            font-weight: bold;
+            z-index: 10;
+            background: #ffaa00;
+            padding: 4px 10px;
+            border: 2px solid #000;
+        }
+
+        #dog-popup {
+            display: none;
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 140px;
+            height: 120px;
+            background: #ff0000;
+            border: 4px solid #ffffff;
+            border-bottom: none;
+            z-index: 1500;
+            text-align: center;
+            color: white;
+            font-family: Impact, sans-serif;
+            font-size: 20px;
+            padding-top: 15px;
+            box-sizing: border-box;
+            box-shadow: 4px 0px 0px #000;
+            animation: dogRise 0.3s cubic-bezier(0.18, 0.89, 0.32, 1.28) forwards;
+        }
+        @keyframes dogRise { from { bottom: -130px; } to { bottom: 0; } }
+
+        /* LEVEL 9: PONG.EXE POP-UP WINDOW */
+        #pong-window {
+            display: none;
+            position: absolute;
+            top: 40%;
+            left: 20px;
+            width: 200px;
+            height: 180px;
+            background: #ece9d8;
+            border: 3px solid #0055ea;
+            border-radius: 8px 8px 0 0;
+            box-shadow: 4px 4px 0px rgba(0,0,0,0.6);
+            z-index: 550;
+            overflow: hidden;
+        }
+        #pong-canvas {
+            display: block;
+            background: #001100;
+        }
+
+        /* WINDOWS XP DIALOGS */
+        #xp-desktop {
+            display: none;
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background-color: #245edb;
+            z-index: 100;
+        }
+
+        .xp-window {
+            position: absolute;
+            top: 45%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 440px;
+            background: #ece9d8;
+            border-radius: 8px 8px 0 0;
+            box-shadow: 4px 4px 0px rgba(0,0,0,0.6);
+            border: 3px solid #0055ea;
+            border-top: none;
+            font-family: "Tahoma", sans-serif;
+            overflow: hidden;
+            z-index: 500;
+        }
+
+        .xp-title-bar {
+            background: linear-gradient(180deg, #0058ee 0%, #3593ff 8%, #288eff 40%, #0055ea 88%, #0040d0 100%);
+            padding: 4px 6px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-radius: 5px 5px 0 0;
+            height: 24px;
+            cursor: move;
+        }
+        .xp-title { color: white; font-weight: bold; font-size: 13px; margin-left: 4px; white-space: nowrap; overflow: hidden; }
+        .xp-close-btn { width: 21px; height: 21px; background: #d83b17; border: 1px solid #fff; border-radius: 3px; color: white; font-size: 13px; font-weight: bold; display: flex; justify-content: center; align-items: center; cursor: pointer; }
+        .xp-body { padding: 25px 20px; font-size: 13px; text-align: center; }
+        .xp-text { margin-bottom: 25px; line-height: 1.5; font-weight: bold; font-size: 15px; }
+        .xp-button-row { display: flex; justify-content: center; gap: 15px; }
+        .xp-btn { min-width: 75px; padding: 4px 14px; font-size: 12px; font-family: "Tahoma", sans-serif; background: #ece9d8; border: 1px solid #003c74; border-radius: 3px; box-shadow: inset 0 0 0 1px #fff; cursor: pointer; }
+
+        .err-countdown .xp-title-bar { background: #008a20 !important; }
+        .err-countdown .xp-text { color: #007718; }
+        .err-panic .xp-title-bar { background: #b30000 !important; }
+        .err-panic .xp-body { background: #ffd6d6 !important; }
+        .err-panic .xp-text { color: #cc0000 !important; }
+
+        .shake-crazy { animation: violentShake 0.05s infinite; }
+        @keyframes violentShake {
+            0% { transform: translate(-50%, -50%) translate(-6px, 4px); }
+            50% { transform: translate(-50%, -50%) translate(6px, -4px); }
+            100% { transform: translate(-50%, -50%) translate(-4px, -6px); }
+        }
+
+        /* READER */
+        #book-window {
+            display: none;
+            position: absolute;
+            top: 20%;
+            left: 15%;
+            width: 260px;
+            height: 160px;
+            background: #fff;
+            border: 3px solid #0055ea;
+            border-radius: 8px 8px 0 0;
+            box-shadow: 4px 4px 0px rgba(0,0,0,0.6);
+            z-index: 550;
+            overflow: hidden;
+            font-family: 'Tahoma', sans-serif;
+            cursor: pointer !important;
+        }
+        #book-body { padding: 15px; height: calc(100% - 30px); display: flex; flex-direction: column; justify-content: center; align-items: center; background: #fffef2; font-size: 13px; text-align: center; pointer-events: none; }
+        #mood-dot { width: 16px; height: 16px; border-radius: 50%; background-color: #00ff00; border: 1px solid #000; margin-right: 6px; }
+
+        /* TAB BAR */
+        #tab-bar-container {
+            display: none;
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 38px;
+            background: #1c1c1c;
+            border-bottom: 2px solid #000;
+            z-index: 700;
+            align-items: center;
+            padding: 0 5px;
+            box-sizing: border-box;
+            font-family: sans-serif;
+        }
+        #tabs-list { display: flex; gap: 4px; max-width: calc(100vw - 260px); overflow-x: hidden; }
+        .browser-tab { background: #333; color: #ddd; font-size: 11px; padding: 4px 10px; border-radius: 4px 4px 0 0; display: flex; align-items: center; gap: 8px; max-width: 140px; white-space: nowrap; border: 1px solid #000; }
+        .tab-close { color: #888; font-weight: bold; cursor: pointer; }
+        .tab-close:hover { background: #e81123; color: white; }
+        #new-tab-btn { background: #555; color: white; border: 1px solid #000; font-size: 16px; padding: 2px 9px; margin-left: 6px; cursor: pointer; }
+        #task-manager-warning { margin-left: auto; color: #ff3333; font-family: monospace; font-weight: bold; font-size: 12px; padding-right: 15px; }
+
+        /* REALTEK */
+        #realtek-window {
+            display: none;
+            position: absolute;
+            top: 25%;
+            right: 10%;
+            width: 300px;
+            background: #ece9d8;
+            border: 3px solid #000;
+            border-radius: 6px;
+            box-shadow: 4px 4px 0px #000;
+            z-index: 560;
+            font-family: 'Tahoma', sans-serif;
+        }
+        .realtek-title-bar { background: #607080; padding: 4px 6px; display: flex; justify-content: space-between; align-items: center; height: 24px; }
+        #realtek-body { padding: 12px; display: flex; flex-direction: column; gap: 8px; background: #e4e2d5; }
+        .eq-bars { display: flex; justify-content: center; gap: 4px; height: 36px; background: #000; padding: 4px; align-items: flex-end; border: 1px solid #000; }
+        .eq-bar { width: 8px; height: 10%; background: #00ff00; }
+        .realtek-controls { display: flex; justify-content: space-between; align-items: center; }
+        #mute-btn { background: #d8d4c0; border: 2px solid #000; padding: 4px 12px; font-weight: bold; font-size: 12px; cursor: pointer; }
+        #mute-btn.loud-alert { background: #ff2222 !important; color: white !important; }
+
+        /* BSOD */
+        #bsod-screen {
+            display: none;
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: #0000aa;
+            color: #ffffff;
+            font-family: "Lucida Console", monospace;
+            padding: 40px;
+            box-sizing: border-box;
+            z-index: 2000;
+        }
+        #bsod-screen h1 { background: #aaaaaa; color: #0000aa; display: inline-block; padding: 2px 8px; font-size: 18px; margin-bottom: 20px; }
+
+        #flash-bang {
+            display: none;
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: white;
+            z-index: 999;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="virtual-cursor">
+        <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 22 22">
+            <path d="M1 1 L1 17 L5.5 13 L8.5 20 L11 19 L8 12 L13.5 12 Z" fill="white" stroke="black" stroke-width="1.3" stroke-linejoin="round"/>
+        </svg>
+    </div>
+
+    <div id="replay-banner">🔴 REPLAYING RECORDED RUN (<span id="replay-time">0.0</span>s)</div>
+
+    <!-- 1. START SCREEN -->
+    <div id="start-screen">
+        <img id="main-logo" src="main/assets/common/logo.png" alt="Multi TASK" 
+             onerror="this.style.display='none'; document.getElementById('wacky-title-box').style.display='block';">
+        
+        <div id="wacky-title-box" class="wacky-fallback-title">
+            <span class="title-multi">Multi</span><span class="title-task">TASK</span>
+        </div>
+
+        <p style="font-family:monospace; font-size:12px; color:#444; margin-bottom:5px;">A High-Stress Multitasking Gauntlet</p>
+        <div class="high-score-banner" id="high-score-display">HIGHEST LEVEL: LEVEL 1</div>
+        
+        <div>
+            <button class="menu-btn btn-story" id="story-btn">Start Gauntlet</button>
+            <button class="menu-btn btn-custom" id="custom-night-btn">Custom Night (0 - 1)</button>
+            <button class="menu-btn btn-replay" id="replay-btn" onclick="playLastRecordedRun()">🎬 Replay</button>
+        </div>
+
+        <a href="play.html" style="text-decoration:none;">
+            <button class="menu-btn btn-multi">🌐 MULTIPLAYER CO-OP (2 - 4P)</button>
+        </a>
+    </div>
+
+    <!-- 2. CUSTOM NIGHT MENU (11 CHARACTERS) -->
+    <div id="custom-night-menu">
+        <div class="custom-title">CUSTOM NIGHT ROSTER</div>
+        <div class="custom-subtitle">SET THREATS (0 = OFF, 1 = ON). #7 REQUIRES #5!</div>
+
+        <div class="roster-grid">
+            <div class="char-card active" id="card-1">
+                <div class="char-name">#1 Darkness</div>
+                <div class="char-desc">Restricts FOV to flashlight around snake.</div>
+                <div class="char-toggle-row"><button class="toggle-btn" onclick="toggleChar(1)">TOGGLE</button><span class="char-val" id="val-1">1</span></div>
+            </div>
+            <div class="char-card active" id="card-2">
+                <div class="char-name">#2 ERR</div>
+                <div class="char-desc">XP popup with reverse count & 1s panic click.</div>
+                <div class="char-toggle-row"><button class="toggle-btn" onclick="toggleChar(2)">TOGGLE</button><span class="char-val" id="val-2">1</span></div>
+            </div>
+            <div class="char-card active" id="card-3">
+                <div class="char-name">#3 Yellow Stalker</div>
+                <div class="char-desc">Homing square targets snake. Click to swat.</div>
+                <div class="char-toggle-row"><button class="toggle-btn" onclick="toggleChar(3)">TOGGLE</button><span class="char-val" id="val-3">1</span></div>
+            </div>
+            <div class="char-card active" id="card-4">
+                <div class="char-name">#4 Acid Rain</div>
+                <div class="char-desc">Draggable bucket. Missed drop fries PC.</div>
+                <div class="char-toggle-row"><button class="toggle-btn" onclick="toggleChar(4)">TOGGLE</button><span class="char-val" id="val-4">1</span></div>
+            </div>
+            <div class="char-card active" id="card-5">
+                <div class="char-name">#5 The Reader</div>
+                <div class="char-desc">Emotional dot decays to red. 1-click to calm.</div>
+                <div class="char-toggle-row"><button class="toggle-btn" onclick="toggleChar(5)">TOGGLE</button><span class="char-val" id="val-5">1</span></div>
+            </div>
+            <div class="char-card active" id="card-6">
+                <div class="char-name">#6 Task Manager</div>
+                <div class="char-desc">Maintain exact 5-tab equilibrium or CPU melts.</div>
+                <div class="char-toggle-row"><button class="toggle-btn" onclick="toggleChar(6)">TOGGLE</button><span class="char-val" id="val-6">1</span></div>
+            </div>
+            <div class="char-card active" id="card-7">
+                <div class="char-name">#7 Realtek Audio</div>
+                <div class="char-desc">Blasts 100% vol. Mute fast or Reader enrages!</div>
+                <div class="char-toggle-row"><button class="toggle-btn" onclick="toggleChar(7)">TOGGLE</button><span class="char-val" id="val-7">1</span></div>
+            </div>
+            <div class="char-card active" id="card-8">
+                <div class="char-name">#8 Duck Hunt</div>
+                <div class="char-desc">Ducks fly left to right. 3 escapes = Dog laughs.</div>
+                <div class="char-toggle-row"><button class="toggle-btn" onclick="toggleChar(8)">TOGGLE</button><span class="char-val" id="val-8">1</span></div>
+            </div>
+            <div class="char-card active" id="card-9">
+                <div class="char-name">#9 Pong.exe</div>
+                <div class="char-desc">Pop-up court. Grab paddle to deflect AI ball!</div>
+                <div class="char-toggle-row"><button class="toggle-btn" onclick="toggleChar(9)">TOGGLE</button><span class="char-val" id="val-9">1</span></div>
+            </div>
+            <div class="char-card active" id="card-10">
+                <div class="char-name">#10 Minesweeper</div>
+                <div class="char-desc">Click spiked bombs to flag before snake hits!</div>
+                <div class="char-toggle-row"><button class="toggle-btn" onclick="toggleChar(10)">TOGGLE</button><span class="char-val" id="val-10">1</span></div>
+            </div>
+            <div class="char-card active" id="card-11">
+                <div class="char-name">#11 Telefragger</div>
+                <div class="char-desc">Cursor shines! Dodge your mouse before he strikes!</div>
+                <div class="char-toggle-row"><button class="toggle-btn" onclick="toggleChar(11)">TOGGLE</button><span class="char-val" id="val-11">1</span></div>
+            </div>
+        </div>
+
+        <div class="custom-bottom-bar">
+            <button id="ready-btn" onclick="launchCustomGame()">READY</button>
+            <button class="toggle-btn" onclick="returnToStartScreen()" style="padding:8px 18px;">BACK</button>
+            <span id="custom-warning" style="color:#ffaa00; font-family:monospace; font-size:13px;"></span>
+        </div>
+    </div>
+
+    <!-- 3. GAMEPLAY SCREEN -->
+    <div id="game-container">
+        <div id="duck-hud">DUCKS ESCAPED: <span id="escaped-count">0</span> / 3</div>
+
+        <div id="tab-bar-container">
+            <div id="tabs-list"></div>
+            <button id="new-tab-btn" onclick="addTab()">+</button>
+            <div id="task-manager-warning">TASK MGR: 5/5 TABS (NORMAL)</div>
+        </div>
+
+        <div id="hud">
+            <span id="level-indicator">LEVEL 1</span> | 
+            <span id="apple-counter">Apples: 0 / 10</span>
+        </div>
+
+        <!-- LEVEL 9: PONG.EXE POP-UP WINDOW (DRAGGABLE POP-UP) -->
+        <div id="pong-window">
+            <div class="xp-title-bar" id="pong-title-bar">
+                <span class="xp-title">🏓 Pong.exe vs AI</span>
+            </div>
+            <canvas id="pong-canvas" width="200" height="150"></canvas>
+        </div>
+
+        <canvas id="mazeCanvas"></canvas>
+
+        <div id="hehe-popup" class="xp-window" style="display:none;">
+            <div class="xp-title-bar">
+                <span class="xp-title">HEHEHEHEHEHEHEHEHEHEHEHEHEHEHEHEHEHEHEHEHEHEHEHEHEHEHEHE</span>
+            </div>
+            <div class="xp-body">
+                <div class="xp-text" id="hehe-text">REMEMBER "5"</div>
+                <div class="xp-button-row">
+                    <button class="xp-btn" id="err-ok-btn" onclick="handlePopupClick()">OK</button>
+                    <button class="xp-btn" onclick="handlePopupClick()">OK</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="book-window" onclick="pacifyReader()">
+            <div class="xp-title-bar" id="book-title-bar">
+                <span class="xp-title">Reader (Click to calm)</span>
+                <div style="display:flex; align-items:center;">
+                    <div id="mood-dot"></div>
+                </div>
+            </div>
+            <div id="book-body">
+                <div id="book-mood-status" style="font-weight: bold; color: #333;">STATUS: HAPPY</div>
+                <div style="color: #666; font-size: 11px; margin-top: 5px;">Click ANYWHERE to pacify!</div>
+            </div>
+        </div>
+
+        <div id="realtek-window">
+            <div class="realtek-title-bar" id="realtek-title-bar">
+                <span style="color:white; font-size:12px; font-weight:bold; margin-left:4px;">🦀 Realtek HD Audio Output</span>
+            </div>
+            <div id="realtek-body">
+                <div class="eq-bars" id="eq-container">
+                    <div class="eq-bar"></div><div class="eq-bar"></div><div class="eq-bar"></div>
+                    <div class="eq-bar"></div><div class="eq-bar"></div><div class="eq-bar"></div>
+                    <div class="eq-bar"></div><div class="eq-bar"></div><div class="eq-bar"></div>
+                </div>
+                <div class="realtek-controls">
+                    <span id="volume-label" style="font-size:12px; font-weight:bold;">VOL: 0% (MUTED)</span>
+                    <button id="mute-btn" onclick="toggleMuteAudio()">MUTE</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="dog-popup">
+            <div>HEH HEH HEH!</div>
+            <div style="font-size:12px; margin-top:6px; font-family:monospace;">[THE DOG LAUGHS]</div>
+        </div>
+
+        <canvas id="topCanvas"></canvas>
+    </div>
+
+    <!-- LEVEL 1 XP UPGRADE SCREEN -->
+    <div id="xp-desktop">
+        <div class="xp-window" style="display:block;">
+            <div class="xp-title-bar">
+                <span class="xp-title">System upgrade!</span>
+                <div class="xp-close-btn" onclick="startNextLevel(2)">✕</div>
+            </div>
+            <div class="xp-body">
+                <div class="xp-text" style="font-weight: normal;">
+                    Windows has gotten a new update! please continue to update<br>cliick "ok"
+                </div>
+                <div class="xp-button-row">
+                    <button class="xp-btn" id="xp-ok-btn" onclick="startNextLevel(2)">OK</button>
+                    <button class="xp-btn" onclick="startNextLevel(2)">OK</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- BSOD -->
+    <div id="bsod-screen">
+        <h1 id="bsod-title"> *** STOP: 0x00000ERR *** </h1>
+        <p id="bsod-desc">A fatal exception has occurred.</p>
+        <p id="bsod-score" style="color:#ffff00; font-weight:bold; margin-top:15px;">LEVEL REACHED: LEVEL 1 | HIGHEST LEVEL: LEVEL 1</p>
+        <br>
+        <p>Technical Information:</p>
+        <p id="bsod-tech">*** STOP: 0xDEADDEAD (0x00000005, 0xF7A38240, 0xF7A37E40)</p>
+        <br>
+        <button onclick="location.reload()" style="background:#aaa; color:#0000aa; border:none; padding:10px 20px; font-family:monospace; font-weight:bold; cursor:pointer; font-size:15px; margin-right:10px;">
+            REBOOT SYSTEM (RETRY)
+        </button>
+        <button onclick="playLastRecordedRun()" style="background:#ff2222; color:#ffffff; border:none; padding:10px 20px; font-family:monospace; font-weight:bold; cursor:pointer; font-size:15px;">
+            🎬 WATCH REPLAY OF YOUR DEATH
+        </button>
+    </div>
+
+    <div id="flash-bang"></div>
+
+    <script>
+        // CHANGE THIS NUMBER TO TEST ANY LEVEL FROM 1 TO 11!
+        const START_LEVEL = 1;
+
+        // ==========================================================
+        //             DETERMINISTIC RANDOM PRNG
+        // ==========================================================
+        let currentSeed = 1337;
+        function setSeed(s) { currentSeed = s % 2147483647; if (currentSeed <= 0) currentSeed += 2147483646; }
+        function gameRandom() {
+            currentSeed = (currentSeed * 16807) % 2147483647;
+            return (currentSeed - 1) / 2147483646;
+        }
+
+        // ==========================================================
+        //               HIGH SCORE SYSTEM
+        // ==========================================================
+        let highestLevel = parseInt(localStorage.getItem('snake_horror_high_level') || '1');
+        const highScoreDisplay = document.getElementById('high-score-display');
+        function updateHighScoreDisplay() { highScoreDisplay.innerText = `HIGHEST LEVEL: LEVEL ${highestLevel}`; }
+        updateHighScoreDisplay();
+
+        function checkAndUpdateHighScore(lvl) {
+            if (!isCustomNight && lvl > highestLevel) {
+                highestLevel = lvl;
+                localStorage.setItem('snake_horror_high_level', highestLevel);
+                updateHighScoreDisplay();
+            }
+        }
+
+        // ==========================================================
+        //              INPUT RECORDER & REPLAY
+        // ==========================================================
+        let isReplaying = false;
+        let recordingSession = null, lastCompletedRun = null;
+        let runStartTime = 0, replayEventIndex = 0, replayTimerInterval = null;
+
+        function startInputRecording(initialSeed, isCustom, startLvl) {
+            recordingSession = {
+                seed: initialSeed,
+                isCustom: isCustom,
+                startLevel: startLvl,
+                rosterConfig: { ...roster },
+                inputs: []
+            };
+            runStartTime = performance.now();
+        }
+
+        function recordInput(eventData) {
+            if (isReplaying || !recordingSession) return;
+            recordingSession.inputs.push({
+                t: performance.now() - runStartTime,
+                ...eventData
+            });
+        }
+
+        function saveRunRecording() {
+            if (recordingSession && recordingSession.inputs.length > 0) lastCompletedRun = recordingSession;
+        }
+
+        // ==========================================================
+        //                    AUDIO SYNTH
+        // ==========================================================
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+        function playBeep(freq, duration, type='triangle', vol=0.5) {
+            if (audioCtx.state === 'suspended') audioCtx.resume();
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.type = type;
+            osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+            gain.gain.setValueAtTime(vol, audioCtx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + duration);
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+            osc.start();
+            osc.stop(audioCtx.currentTime + duration);
+        }
+
+        function playWaterBloop() {
+            if (audioCtx.state === 'suspended') audioCtx.resume();
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(300, audioCtx.currentTime);
+            osc.frequency.exponentialRampToValueAtTime(900, audioCtx.currentTime + 0.12);
+            gain.gain.setValueAtTime(0.6, audioCtx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.12);
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+            osc.start();
+            osc.stop(audioCtx.currentTime + 0.12);
+        }
+
+        function playGunshot() {
+            if (audioCtx.state === 'suspended') audioCtx.resume();
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.type = 'sawtooth';
+            osc.frequency.setValueAtTime(250, audioCtx.currentTime);
+            osc.frequency.exponentialRampToValueAtTime(30, audioCtx.currentTime + 0.2);
+            gain.gain.setValueAtTime(0.8, audioCtx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.2);
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+            osc.start();
+            osc.stop(audioCtx.currentTime + 0.2);
+        }
+
+        function playDuckQuack() {
+            playBeep(450, 0.08, 'square', 0.3);
+            setTimeout(() => playBeep(420, 0.08, 'square', 0.3), 90);
+        }
+
+        function playDogLaugh() {
+            const notes = [493, 493, 493, 587, 493];
+            notes.forEach((freq, idx) => setTimeout(() => playBeep(freq, 0.08, 'square', 0.6), idx * 110));
+        }
+
+        function playFrySound() {
+            for (let i = 0; i < 5; i++) setTimeout(() => playBeep(60 + gameRandom() * 200, 0.2, 'sawtooth', 0.9), i * 60);
+        }
+
+        function playGlitchScreech() {
+            for (let i = 0; i < 4; i++) setTimeout(() => playBeep(100 + gameRandom() * 800, 0.4, 'sawtooth', 0.8), i * 100);
+        }
+
+        function playMineExplosion() {
+            for (let i = 0; i < 3; i++) setTimeout(() => playBeep(90 - i * 20, 0.4, 'sawtooth', 0.9), i * 80);
+        }
+
+        let audioSpikeOsc = null, audioSpikeGain = null;
+        function startLoudAudioSound() {
+            if (audioCtx.state === 'suspended') audioCtx.resume();
+            if (audioSpikeOsc) return;
+            audioSpikeOsc = audioCtx.createOscillator();
+            audioSpikeGain = audioCtx.createGain();
+            audioSpikeOsc.type = 'sawtooth';
+            audioSpikeOsc.frequency.setValueAtTime(160, audioCtx.currentTime);
+            audioSpikeGain.gain.setValueAtTime(0.65, audioCtx.currentTime);
+            audioSpikeOsc.connect(audioSpikeGain);
+            audioSpikeGain.connect(audioCtx.destination);
+            audioSpikeOsc.start();
+        }
+
+        function stopLoudAudioSound() {
+            if (audioSpikeOsc) {
+                audioSpikeOsc.stop();
+                audioSpikeOsc.disconnect();
+                audioSpikeOsc = null;
+            }
+        }
+
+        // DOM Elements
+        const startScreen = document.getElementById('start-screen');
+        const customMenu = document.getElementById('custom-night-menu');
+        const gameContainer = document.getElementById('game-container');
+        const xpDesktop = document.getElementById('xp-desktop');
+
+        const canvas = document.getElementById('mazeCanvas');
+        const ctx = canvas.getContext('2d');
+        const topCanvas = document.getElementById('topCanvas');
+        const tCtx = topCanvas.getContext('2d');
+
+        const counterEl = document.getElementById('apple-counter');
+        const levelEl = document.getElementById('level-indicator');
+        const duckHud = document.getElementById('duck-hud');
+        const escapedCountEl = document.getElementById('escaped-count');
+        const dogPopup = document.getElementById('dog-popup');
+
+        const pongWindow = document.getElementById('pong-window');
+        const pongCanvas = document.getElementById('pong-canvas');
+        const pCtx = pongCanvas.getContext('2d');
+
+        const hehePopup = document.getElementById('hehe-popup');
+        const heheText = document.getElementById('hehe-text');
+        const bookWindow = document.getElementById('book-window');
+        const moodDot = document.getElementById('mood-dot');
+        const bookStatus = document.getElementById('book-mood-status');
+        const realtekWindow = document.getElementById('realtek-window');
+        const volumeLabel = document.getElementById('volume-label');
+        const muteBtn = document.getElementById('mute-btn');
+        const tabBar = document.getElementById('tab-bar-container');
+        const tabsList = document.getElementById('tabs-list');
+        const taskWarning = document.getElementById('task-manager-warning');
+        const customWarning = document.getElementById('custom-warning');
+        const bsodScreen = document.getElementById('bsod-screen');
+        const bsodTitle = document.getElementById('bsod-title');
+        const bsodDesc = document.getElementById('bsod-desc');
+        const bsodScore = document.getElementById('bsod-score');
+        const bsodTech = document.getElementById('bsod-tech');
+        const flashBang = document.getElementById('flash-bang');
+
+        const virtualCursor = document.getElementById('virtual-cursor');
+        const replayBanner = document.getElementById('replay-banner');
+        const replayTimeEl = document.getElementById('replay-time');
+
+        const GRID_SIZE = 36;
+        let cols, rows;
+
+        function resize() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+            topCanvas.width = window.innerWidth;
+            topCanvas.height = window.innerHeight;
+            cols = Math.floor(canvas.width / GRID_SIZE);
+            rows = Math.floor(canvas.height / GRID_SIZE);
+            bucket.y = canvas.height - 40;
+        }
+        window.addEventListener('resize', resize);
+
+        // ====================================================
+        //       FNAF CUSTOM NIGHT CONFIG (11 CHARACTERS)
+        // ====================================================
+        let isCustomNight = false;
+        let roster = { 1: 1, 2: 1, 3: 1, 4: 1, 5: 1, 6: 1, 7: 1, 8: 1, 9: 1, 10: 1, 11: 1 };
+
+        function toggleChar(id) {
+            roster[id] = roster[id] === 1 ? 0 : 1;
+            if (id === 7 && roster[7] === 1) {
+                roster[5] = 1;
+                customWarning.innerText = "NOTE: #7 (Realtek) forced #5 (Reader) to 1!";
+                setTimeout(() => customWarning.innerText = "", 3000);
+            }
+            if (id === 5 && roster[5] === 0 && roster[7] === 1) {
+                roster[7] = 0;
+                customWarning.innerText = "NOTE: Turning off #5 forced #7 to 0!";
+                setTimeout(() => customWarning.innerText = "", 3000);
+            }
+            updateRosterUI();
+            playBeep(450, 0.05);
+        }
+
+        function updateRosterUI() {
+            for (let i = 1; i <= 11; i++) {
+                const card = document.getElementById(`card-${i}`);
+                const val = document.getElementById(`val-${i}`);
+                val.innerText = roster[i];
+                if (roster[i] === 1) card.classList.add('active');
+                else card.classList.remove('active');
+            }
+        }
+
+        document.getElementById('custom-night-btn').addEventListener('click', () => {
+            startScreen.style.display = 'none';
+            customMenu.style.display = 'block';
+            updateRosterUI();
+        });
+
+        function returnToStartScreen() {
+            customMenu.style.display = 'none';
+            startScreen.style.display = 'block';
+        }
+
+        let currentLevel = START_LEVEL;
+        let applesCollected = 0;
+        const totalApples = 10;
+        let gameActive = false;
+
+        document.getElementById('story-btn').addEventListener('click', () => {
+            isCustomNight = false;
+            currentLevel = START_LEVEL;
+            const seed = Math.floor(Math.random() * 1000000) + 1;
+            setSeed(seed);
+            startInputRecording(seed, false, currentLevel);
+            launchGameSession();
+        });
+
+        function launchCustomGame() {
+            isCustomNight = true;
+            customMenu.style.display = 'none';
+            const seed = Math.floor(Math.random() * 1000000) + 1;
+            setSeed(seed);
+            startInputRecording(seed, true, 1);
+            launchGameSession();
+        }
+
+        function launchGameSession() {
+            if (audioCtx.state === 'suspended') audioCtx.resume();
+            resize();
+            spawnApples();
+            startScreen.style.display = 'none';
+            gameContainer.style.display = 'block';
+            gameActive = true;
+            lastTick = performance.now();
+
+            if (isCustomNight) setupCustomNightSession();
+            else setupStoryLevel(currentLevel);
+
+            requestAnimationFrame(gameLoop);
+        }
+
+        function setupCustomNightSession() {
+            levelEl.innerText = "CUSTOM: " + Object.values(roster).reduce((a,b)=>a+b,0) + "/11 ACTIVE";
+            levelEl.style.color = "#00ff88";
+            counterEl.innerText = `Apples: 0 / ${totalApples}`;
+
+            if (roster[2] === 1) scheduleNextPopup();
+            if (roster[3] === 1) setTimeout(spawnStalker, 2000);
+            if (roster[5] === 1) startBookMechanic();
+            if (roster[6] === 1) startLevel6TaskManager();
+            if (roster[7] === 1) startRealtekAudio();
+            if (roster[8] === 1) startDuckHunt();
+            if (roster[9] === 1) startPong();
+            if (roster[10] === 1) startMinesweeper();
+            if (roster[11] === 1) startTelefragger();
+        }
+
+        let snake = [{ x: 10, y: 10 }, { x: 9, y: 10 }, { x: 8, y: 10 }, { x: 7, y: 10 }];
+        let dir = { x: 1, y: 0 };
+        let nextDir = { x: 1, y: 0 };
+
+        let apples = [];
+        function spawnApples() {
+            apples = [];
+            for (let i = 0; i < totalApples; i++) {
+                apples.push({
+                    x: Math.floor(gameRandom() * (cols - 4)) + 2,
+                    y: Math.floor(gameRandom() * (rows - 4)) + 2,
+                    collected: false
+                });
+            }
+        }
+
+        let stalker = { active: false, x: 0, y: 0, size: 26, speed: 1.3, beepTimer: 0 };
+        function spawnStalker() {
+            if (!gameActive) return;
+            if (!isCustomNight && currentLevel < 3) return;
+            if (isCustomNight && roster[3] === 0) return;
+
+            stalker.active = true;
+            stalker.x = gameRandom() > 0.5 ? -20 : canvas.width + 20;
+            stalker.y = gameRandom() * canvas.height;
+            stalker.speed = 1.3;
+        }
+
+        let bucket = { x: window.innerWidth / 2 - 45, y: window.innerHeight - 40, width: 90, height: 26, isDragging: false, dragOffsetX: 0 };
+        let rainDrop = null, rainCooldown = false;
+
+        function spawnRainDrop() {
+            if (!gameActive || rainDrop !== null || rainCooldown) return;
+            if (!isCustomNight && currentLevel < 4) return;
+            if (isCustomNight && roster[4] === 0) return;
+
+            rainDrop = {
+                x: Math.random() * (canvas.width - 80) + 40,
+                y: (currentLevel >= 6 || (isCustomNight && roster[6] === 1)) ? 42 : -10,
+                width: 10,
+                height: 18,
+                speed: 3.4
+            };
+        }
+
+        let moodState = 'green', redTimer = null, moodCycleTimeout = null;
+        function startBookMechanic() { bookWindow.style.display = 'block'; resetMoodToGreen(); }
+
+        function pacifyReader() {
+            if (!gameActive) return;
+            playBeep(650, 0.08);
+            resetMoodToGreen();
+        }
+
+        function resetMoodToGreen() {
+            if (redTimer) clearTimeout(redTimer);
+            if (moodCycleTimeout) clearTimeout(moodCycleTimeout);
+
+            moodState = 'green';
+            moodDot.style.backgroundColor = '#00ff00';
+            bookStatus.innerText = "STATUS: HAPPY";
+            bookStatus.style.color = "#008820";
+
+            const decayDelay = gameRandom() * 2000 + 1500;
+            moodCycleTimeout = setTimeout(() => { if (gameActive) turnMoodYellow(); }, decayDelay);
+        }
+
+        function turnMoodYellow() {
+            moodState = 'yellow';
+            moodDot.style.backgroundColor = '#ffff00';
+            bookStatus.innerText = "STATUS: ANNOYED! (CLICK ME)";
+            bookStatus.style.color = "#bb8800";
+            playBeep(380, 0.1);
+
+            moodCycleTimeout = setTimeout(() => { if (gameActive) turnMoodRed(); }, 1400);
+        }
+
+        function turnMoodRed() {
+            if (moodState === 'red') return;
+            moodState = 'red';
+            moodDot.style.backgroundColor = '#ff0000';
+            bookStatus.innerText = "STATUS: ENRAGED!! CLICK NOW!!";
+            bookStatus.style.color = "#ff0000";
+            playBeep(240, 0.2, 'sawtooth');
+
+            if (redTimer) clearTimeout(redTimer);
+            redTimer = setTimeout(() => {
+                if (moodState === 'red' && gameActive) {
+                    triggerBSOD("READER_NEGLECT_FATAL", "You ignored the reader. The dot became furious.", "0x000DOT_RAGE");
+                }
+            }, 2000);
+        }
+
+        let isDraggingBook = false, bookDragX = 0, bookDragY = 0;
+        document.getElementById('book-title-bar').addEventListener('mousedown', e => {
+            isDraggingBook = true;
+            bookDragX = e.clientX - bookWindow.offsetLeft;
+            bookDragY = e.clientY - bookWindow.offsetTop;
+            e.stopPropagation();
+        });
+
+        let isAudioLoud = false, audioSpikeInterval = null, audioAngerTimer = null, eqAnimInterval = null;
+
+        function startRealtekAudio() {
+            realtekWindow.style.display = 'block';
+            isAudioLoud = false;
+            updateRealtekUI(false);
+
+            audioSpikeInterval = setInterval(() => {
+                if (!gameActive || isAudioLoud) return;
+                triggerAudioSpike();
+            }, gameRandom() * 4000 + 4500);
+        }
+
+        function triggerAudioSpike() {
+            isAudioLoud = true;
+            updateRealtekUI(true);
+            startLoudAudioSound();
+
+            audioAngerTimer = setTimeout(() => {
+                if (isAudioLoud && gameActive) turnMoodRed();
+            }, 2500);
+        }
+
+        function toggleMuteAudio() {
+            if (!isAudioLoud) return;
+            isAudioLoud = false;
+            stopLoudAudioSound();
+            if (audioAngerTimer) clearTimeout(audioAngerTimer);
+            playBeep(600, 0.08);
+            updateRealtekUI(false);
+        }
+
+        function updateRealtekUI(loud) {
+            const bars = document.querySelectorAll('.eq-bar');
+            if (loud) {
+                volumeLabel.innerText = "VOL: 100% (CRITICAL LOUD!)";
+                volumeLabel.style.color = "#ff0000";
+                muteBtn.classList.add('loud-alert');
+                muteBtn.innerText = "SHUT UP! (MUTE)";
+
+                clearInterval(eqAnimInterval);
+                eqAnimInterval = setInterval(() => {
+                    bars.forEach(b => {
+                        b.style.height = `${gameRandom() * 80 + 20}%`;
+                        b.style.background = "#ff2222";
+                    });
+                }, 60);
+            } else {
+                volumeLabel.innerText = "VOL: 0% (MUTED)";
+                volumeLabel.style.color = "#008820";
+                muteBtn.classList.remove('loud-alert');
+                muteBtn.innerText = "MUTE";
+
+                clearInterval(eqAnimInterval);
+                bars.forEach(b => {
+                    b.style.height = '10%';
+                    b.style.background = '#00ff00';
+                });
+            }
+        }
+
+        let isDraggingRealtek = false, realtekDragX = 0, realtekDragY = 0;
+        document.getElementById('realtek-title-bar').addEventListener('mousedown', e => {
+            isDraggingRealtek = true;
+            realtekDragX = e.clientX - realtekWindow.offsetLeft;
+            realtekDragY = e.clientY - realtekWindow.offsetTop;
+        });
+
+        const TARGET_TABS = 5;
+        let activeTabs = ["snake.html", "realtek_hd", "duck_hunt", "coolmath", "subway.mp4"];
+        const randomTabNames = ["ram_download", "err_fix", "toast_smell", "dog_laugh.mp3"];
+        let tabOverheatTimer = null, tabChaosInterval = null;
+
+        function startLevel6TaskManager() {
+            tabBar.style.display = 'flex';
+            renderTabs();
+            tabChaosInterval = setInterval(() => {
+                if (!gameActive) return;
+                if (gameRandom() > 0.5) {
+                    activeTabs.push(randomTabNames[Math.floor(gameRandom() * randomTabNames.length)]);
+                    playBeep(260, 0.1, 'square');
+                } else if (activeTabs.length > 1) {
+                    activeTabs.splice(Math.floor(gameRandom() * activeTabs.length), 1);
+                    playBeep(180, 0.1, 'sawtooth');
+                }
+                renderTabs();
+            }, 3200);
+        }
+
+        function renderTabs() {
+            tabsList.innerHTML = '';
+            activeTabs.forEach((tabName, index) => {
+                const tabEl = document.createElement('div');
+                tabEl.className = 'browser-tab';
+                tabEl.innerHTML = `<span>${tabName}</span><span class="tab-close" onclick="closeTab(${index})">✕</span>`;
+                tabsList.appendChild(tabEl);
+            });
+            checkTabEquilibrium();
+        }
+
+        function closeTab(index) {
+            activeTabs.splice(index, 1);
+            playBeep(480, 0.05);
+            renderTabs();
+        }
+
+        function addTab() {
+            activeTabs.push(randomTabNames[Math.floor(gameRandom() * randomTabNames.length)]);
+            playBeep(520, 0.05);
+            renderTabs();
+        }
+
+        function checkTabEquilibrium() {
+            const count = activeTabs.length;
+            if (count === TARGET_TABS) {
+                taskWarning.innerText = `TASK MGR: ${count}/${TARGET_TABS} TABS (STABLE)`;
+                taskWarning.style.color = "#00ff88";
+                tabBar.style.background = "#1c1c1c";
+                if (tabOverheatTimer) { clearTimeout(tabOverheatTimer); tabOverheatTimer = null; }
+            } else {
+                const isOver = count > TARGET_TABS;
+                taskWarning.innerText = `CRITICAL: ${count}/${TARGET_TABS} TABS (${isOver ? 'OVERHEAT!' : 'UNDERFLOW!'})`;
+                taskWarning.style.color = "#ff2222";
+                tabBar.style.background = "#400000";
+
+                if (!tabOverheatTimer) {
+                    tabOverheatTimer = setTimeout(() => {
+                        if (activeTabs.length !== TARGET_TABS && gameActive) {
+                            playFrySound();
+                            triggerBSOD("TASK_MANAGER_CPU_MELTDOWN", `CPU melted. Tab count was ${activeTabs.length}, required exactly ${TARGET_TABS}.`, "0x000CPU_FIRE");
+                        }
+                    }, 2000);
+                }
+            }
+        }
+
+        let duck = { active: false, x: -40, y: 200, size: 28, speedX: 2.8, wave: 0 };
+        let escapedDucks = 0, duckSpawnTimeout = null;
+
+        function startDuckHunt() {
+            duckHud.style.display = 'block';
+            escapedDucks = 0;
+            escapedCountEl.innerText = escapedDucks;
+            scheduleNextDuck();
+        }
+
+        function scheduleNextDuck() {
+            if (!gameActive) return;
+            const canDuck = isCustomNight ? roster[8] === 1 : currentLevel >= 8;
+            if (!canDuck) return;
+
+            duckSpawnTimeout = setTimeout(() => {
+                if (gameActive && !duck.active) spawnDuck();
+            }, gameRandom() * 3000 + 3500);
+        }
+
+        function spawnDuck() {
+            duck.active = true;
+            duck.x = -40;
+            duck.y = gameRandom() * (canvas.height - 240) + 90;
+            duck.speedX = gameRandom() * 0.8 + 2.6;
+            duck.wave = 0;
+            playDuckQuack();
+        }
+
+        function updateDuck() {
+            if (!duck.active) return;
+            duck.x += duck.speedX;
+            duck.wave += 0.1;
+            duck.y += Math.sin(duck.wave) * 1.5;
+
+            if (duck.x > canvas.width + 30) {
+                duck.active = false;
+                escapedDucks++;
+                escapedCountEl.innerText = escapedDucks;
+                playBeep(200, 0.3, 'sawtooth');
+
+                if (escapedDucks >= 3) {
+                    triggerDogLaughDefeat();
+                    return;
+                }
+                scheduleNextDuck();
+            }
+        }
+
+        function triggerDogLaughDefeat() {
+            gameActive = false;
+            stopLoudAudioSound();
+            dogPopup.style.display = 'block';
+            playDogLaugh();
+
+            setTimeout(() => {
+                triggerBSOD("DUCK_HUNT_3_ESCAPES_DOG_LAUGHED", "You let 3 ducks escape. The dog rose up and laughed in your face.", "0x000DOG_LAUGH");
+            }, 2400);
+        }
+
+        // ====================================================
+        //       LEVEL 9: PONG.EXE POP-UP WINDOW & DRAGGABLE PADDLE
+        // ====================================================
+        let pong = {
+            active: false,
+            ballX: 100,
+            ballY: 75,
+            ballVx: 2.3,
+            ballVy: 1.4,
+            playerY: 55,
+            aiY: 55,
+            paddleH: 36,
+            paddleW: 8,
+            isDraggingPaddle: false,
+            dragOffsetY: 0
+        };
+
+        function startPong() {
+            pongWindow.style.display = 'block';
+            pong.active = true;
+            pong.ballX = 100;
+            pong.ballY = 75;
+            pong.ballVx = 2.4;
+            pong.ballVy = (gameRandom() - 0.5) * 2;
+        }
+
+        let isDraggingPongWindow = false, pongDragX = 0, pongDragY = 0;
+        document.getElementById('pong-title-bar').addEventListener('mousedown', e => {
+            isDraggingPongWindow = true;
+            pongDragX = e.clientX - pongWindow.offsetLeft;
+            pongDragY = e.clientY - pongWindow.offsetTop;
+            e.stopPropagation();
+        });
+
+        function updatePong() {
+            if (!pong.active) return;
+
+            pong.aiY += ((pong.ballY - pong.paddleH / 2) - pong.aiY) * 0.12;
+            pong.aiY = Math.max(2, Math.min(150 - pong.paddleH - 2, pong.aiY));
+
+            pong.ballX += pong.ballVx;
+            pong.ballY += pong.ballVy;
+
+            if (pong.ballY <= 4 || pong.ballY >= 146) {
+                pong.ballVy = -pong.ballVy;
+                playBeep(400, 0.03, 'square', 0.2);
+            }
+
+            if (pong.ballX >= 184 && pong.ballY >= pong.aiY && pong.ballY <= pong.aiY + pong.paddleH) {
+                pong.ballVx = -Math.abs(pong.ballVx);
+                pong.ballVy += (gameRandom() - 0.5) * 0.8;
+                playBeep(350, 0.04, 'square', 0.25);
+            }
+
+            if (pong.ballX <= 18 && pong.ballY >= pong.playerY && pong.ballY <= pong.playerY + pong.paddleH) {
+                pong.ballVx = Math.abs(pong.ballVx);
+                pong.ballVy += (gameRandom() - 0.5) * 0.8;
+                playBeep(550, 0.04, 'square', 0.3);
+            }
+
+            if (pong.ballX < -5) {
+                pong.active = false;
+                playGlitchScreech();
+                triggerBSOD("PONG_BALL_MISSED", "You failed to deflect the ball. The AI smashed your screen.", "0x000PONG_BALL");
+                return;
+            }
+
+            pCtx.clearRect(0, 0, 200, 150);
+
+            pCtx.strokeStyle = "#004422";
+            pCtx.setLineDash([4, 4]);
+            pCtx.beginPath();
+            pCtx.moveTo(100, 0);
+            pCtx.lineTo(100, 150);
+            pCtx.stroke();
+            pCtx.setLineDash([]);
+
+            pCtx.fillStyle = pong.isDraggingPaddle ? "#ffff00" : "#ffffff";
+            pCtx.fillRect(6, pong.playerY, pong.paddleW, pong.paddleH);
+
+            pCtx.fillStyle = "#ffffff";
+            pCtx.fillRect(186, pong.aiY, pong.paddleW, pong.paddleH);
+
+            pCtx.fillStyle = "#00ff88";
+            pCtx.fillRect(pong.ballX - 3, pong.ballY - 3, 6, 6);
+        }
+
+        // ====================================================
+        //       LEVEL 10: MINESWEEPER
+        // ====================================================
+        let mines = [];
+        function startMinesweeper() { mines = []; scheduleNextMine(); }
+
+        function scheduleNextMine() {
+            if (!gameActive) return;
+            const canMine = isCustomNight ? roster[10] === 1 : currentLevel >= 10;
+            if (!canMine) return;
+
+            setTimeout(() => { if (gameActive) spawnMine(); }, gameRandom() * 4000 + 4000);
+        }
+
+        function spawnMine() {
+            mines.push({
+                x: Math.floor(gameRandom() * (cols - 4)) + 2,
+                y: Math.floor(gameRandom() * (rows - 4)) + 2,
+                flagged: false
+            });
+            playBeep(180, 0.15, 'sawtooth', 0.2);
+            scheduleNextMine();
+        }
+
+        function checkMineCollision(head) {
+            for (let i = 0; i < mines.length; i++) {
+                const mine = mines[i];
+                if (mine.x === head.x && mine.y === head.y && !mine.flagged) {
+                    playMineExplosion();
+                    triggerBSOD("MINESWEEPER_DETONATION", "Snake stepped on an unflagged landmine. Total demolition.", "0x000MINE_BOOM");
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        function handleMineClick(mouseX, mouseY) {
+            for (let i = 0; i < mines.length; i++) {
+                const m = mines[i];
+                const px = m.x * GRID_SIZE, py = m.y * GRID_SIZE;
+                if (mouseX >= px && mouseX <= px + GRID_SIZE && mouseY >= py && mouseY <= py + GRID_SIZE) {
+                    if (!m.flagged) {
+                        m.flagged = true;
+                        playBeep(600, 0.1, 'square');
+                        return true;
+                    }
+                }
+            }
+            return false;
+        }
+
+        // ====================================================
+        //       LEVEL 11: TELEFRAGGER
+        // ====================================================
+        let telefragger = { active: false, phase: 'idle', targetX: 0, targetY: 0, x: 0, y: 0, size: 38, driftTimer: 0 };
+
+        function startTelefragger() {
+            telefragger.active = false;
+            telefragger.phase = 'idle';
+            scheduleNextTelefrag();
+        }
+
+        function scheduleNextTelefrag() {
+            if (!gameActive) return;
+            const canTele = isCustomNight ? roster[11] === 1 : currentLevel >= 11;
+            if (!canTele) return;
+
+            setTimeout(() => {
+                if (gameActive && telefragger.phase === 'idle') triggerTelefragAmbush();
+            }, gameRandom() * 4000 + 4000);
+        }
+
+        function triggerTelefragAmbush() {
+            telefragger.phase = 'shine';
+            playBeep(850, 1.2, 'sawtooth', 0.25);
+
+            setTimeout(() => {
+                if (!gameActive) return;
+                telefragger.targetX = currentMousePos.x;
+                telefragger.targetY = currentMousePos.y;
+                telefragger.phase = 'teleport';
+                telefragger.x = telefragger.targetX - telefragger.size / 2;
+                telefragger.y = telefragger.targetY - telefragger.size / 2;
+                playGlitchScreech();
+
+                const distToCursor = Math.sqrt(Math.pow(currentMousePos.x - telefragger.targetX, 2) + Math.pow(currentMousePos.y - telefragger.targetY, 2));
+                if (distToCursor < 36) {
+                    triggerBSOD("TELEFRAGGED_BY_NULLSCAPE", "Telefragger materialized directly inside your cursor. Vaporized.", "0x000TELEFRAG");
+                    return;
+                }
+
+                telefragger.phase = 'drift';
+                // 5-SECOND i-FRAME COOLDOWN
+                setTimeout(() => {
+                    if (telefragger.phase === 'drift') {
+                        telefragger.phase = 'cooldown';
+                        setTimeout(() => {
+                            if (gameActive) {
+                                telefragger.phase = 'idle';
+                                scheduleNextTelefrag();
+                            }
+                        }, 5000);
+                    }
+                }, 2600);
+
+            }, 1100);
+        }
+
+        function updateTelefragger() {
+            if (telefragger.phase !== 'drift') return;
+
+            const dx = currentMousePos.x - (telefragger.x + telefragger.size / 2);
+            const dy = currentMousePos.y - (telefragger.y + telefragger.size / 2);
+            const dist = Math.sqrt(dx * dx + dy * dy);
+
+            telefragger.x += (dx / (dist || 1)) * 1.5;
+            telefragger.y += (dy / (dist || 1)) * 1.5;
+
+            if (dist < 26) {
+                triggerBSOD("TELEFRAGGER_CURSOR_CONSUMED", "Telefragger caught your cursor. Your controls were severed.", "0x000NULL_VOID");
+            }
+        }
+
+        // ====================================================
+        //         UNIFIED INPUT HANDLER (RECORDED)
+        // ====================================================
+        let currentMousePos = { x: window.innerWidth / 2, y: window.innerHeight / 2 };
+
+        window.addEventListener('mousedown', e => {
+            if (isReplaying) return;
+            recordInput({ type: 'click', x: e.clientX, y: e.clientY });
+            handleGameClick(e.clientX, e.clientY);
+        });
+
+        let lastMouseMoveTime = 0;
+        window.addEventListener('mousemove', e => {
+            currentMousePos.x = e.clientX;
+            currentMousePos.y = e.clientY;
+
+            if (isReplaying) return;
+            const now = performance.now();
+            if (now - lastMouseMoveTime > 25) {
+                recordInput({ type: 'move', x: e.clientX, y: e.clientY });
+                lastMouseMoveTime = now;
+            }
+            handleGameMouseMove(e.clientX, e.clientY);
+        });
+
+        window.addEventListener('mouseup', () => {
+            if (isReplaying) return;
+            recordInput({ type: 'mouseup' });
+            bucket.isDragging = false;
+            isDraggingBook = false;
+            isDraggingRealtek = false;
+            isDraggingPongWindow = false;
+            pong.isDraggingPaddle = false;
+        });
+
+        window.addEventListener('keydown', e => {
+            if (isReplaying) return;
+            recordInput({ type: 'key', key: e.key.toLowerCase() });
+            handleGameKeyDown(e.key.toLowerCase());
+        });
+
+        function handleGameClick(mouseX, mouseY) {
+            if (handleMineClick(mouseX, mouseY)) return;
+
+            // Grab Pong Paddle directly
+            if (pong.active) {
+                const rect = pongWindow.getBoundingClientRect();
+                const relX = mouseX - rect.left;
+                const relY = mouseY - rect.top - 24;
+                if (relX >= 2 && relX <= 25 && relY >= pong.playerY - 8 && relY <= pong.playerY + pong.paddleH + 8) {
+                    pong.isDraggingPaddle = true;
+                    pong.dragOffsetY = relY - pong.playerY;
+                    return;
+                }
+            }
+
+            if (duck.active) {
+                const dx = mouseX - (duck.x + duck.size / 2);
+                const dy = mouseY - (duck.y + duck.size / 2);
+                if (Math.sqrt(dx * dx + dy * dy) < 38) {
+                    duck.active = false;
+                    playGunshot();
+                    scheduleNextDuck();
+                    return;
+                }
+            }
+
+            const canBucket = isCustomNight ? roster[4] === 1 : currentLevel >= 4;
+            if (canBucket && mouseX >= bucket.x && mouseX <= bucket.x + bucket.width && mouseY >= bucket.y && mouseY <= bucket.y + bucket.height) {
+                bucket.isDragging = true;
+                bucket.dragOffsetX = mouseX - bucket.x;
+                return;
+            }
+
+            if (stalker.active) {
+                const dx = mouseX - (stalker.x + stalker.size / 2);
+                const dy = mouseY - (stalker.y + stalker.size / 2);
+                if (Math.sqrt(dx * dx + dy * dy) < 42) {
+                    stalker.active = false;
+                    playBeep(750, 0.15, 'sawtooth');
+                    setTimeout(() => { if (gameActive) spawnStalker(); }, gameRandom() * 3000 + 5000);
+                }
+            }
+        }
+
+        function handleGameMouseMove(mouseX, mouseY) {
+            if (pong.isDraggingPaddle) {
+                const rect = pongWindow.getBoundingClientRect();
+                const relY = mouseY - rect.top - 24;
+                pong.playerY = Math.max(2, Math.min(150 - pong.paddleH - 2, relY - pong.dragOffsetY));
+            }
+
+            if (isDraggingPongWindow) {
+                pongWindow.style.left = (mouseX - pongDragX) + 'px';
+                pongWindow.style.top = (mouseY - pongDragY) + 'px';
+            }
+
+            if (bucket.isDragging) {
+                bucket.x = mouseX - bucket.dragOffsetX;
+                if (bucket.x < 0) bucket.x = 0;
+                if (bucket.x + bucket.width > canvas.width) bucket.x = canvas.width - bucket.width;
+            }
+            if (isDraggingBook) {
+                bookWindow.style.left = (mouseX - bookDragX) + 'px';
+                bookWindow.style.top = (mouseY - bookDragY) + 'px';
+            }
+            if (isDraggingRealtek) {
+                realtekWindow.style.left = (mouseX - realtekDragX) + 'px';
+                realtekWindow.style.top = (mouseY - realtekDragY) + 'px';
+            }
+        }
+
+        function handleGameKeyDown(key) {
+            if ((key === 'w' || key === 'arrowup') && dir.y === 0) nextDir = { x: 0, y: -1 };
+            if ((key === 's' || key === 'arrowdown') && dir.y === 0) nextDir = { x: 0, y: 1 };
+            if ((key === 'a' || key === 'arrowleft') && dir.x === 0) nextDir = { x: -1, y: 0 };
+            if ((key === 'd' || key === 'arrowright') && dir.x === 0) nextDir = { x: 1, y: 0 };
+
+            const canBucket = isCustomNight ? roster[4] === 1 : currentLevel >= 4;
+            if (canBucket) {
+                if (key === 'q') bucket.x = Math.max(0, bucket.x - 30);
+                if (key === 'e') bucket.x = Math.min(canvas.width - bucket.width, bucket.x + 30);
+            }
+        }
+
+        function playLastRecordedRun() {
+            if (!lastCompletedRun) {
+                alert("No recorded run found yet! Play a round first.");
+                return;
+            }
+
+            isReplaying = true;
+            bsodScreen.style.display = 'none';
+            startScreen.style.display = 'none';
+            customMenu.style.display = 'none';
+            replayBanner.style.display = 'block';
+            virtualCursor.style.display = 'block';
+
+            setSeed(lastCompletedRun.seed);
+            isCustomNight = lastCompletedRun.isCustom;
+            roster = { ...lastCompletedRun.rosterConfig };
+            currentLevel = lastCompletedRun.startLevel;
+
+            replayEventIndex = 0;
+            const playbackStartTime = performance.now();
+
+            launchGameSession();
+
+            replayTimerInterval = setInterval(() => {
+                if (!isReplaying || !gameActive) {
+                    clearInterval(replayTimerInterval);
+                    return;
+                }
+
+                const elapsed = performance.now() - playbackStartTime;
+                replayTimeEl.innerText = (elapsed / 1000).toFixed(1);
+
+                while (replayEventIndex < lastCompletedRun.inputs.length &&
+                       lastCompletedRun.inputs[replayEventIndex].t <= elapsed) {
+                    const ev = lastCompletedRun.inputs[replayEventIndex];
+
+                    if (ev.type === 'key') {
+                        handleGameKeyDown(ev.key);
+                    } else if (ev.type === 'move') {
+                        currentMousePos.x = ev.x;
+                        currentMousePos.y = ev.y;
+                        virtualCursor.style.left = `${ev.x}px`;
+                        virtualCursor.style.top = `${ev.y}px`;
+                        handleGameMouseMove(ev.x, ev.y);
+                    } else if (ev.type === 'click') {
+                        virtualCursor.style.left = `${ev.x}px`;
+                        virtualCursor.style.top = `${ev.y}px`;
+                        virtualCursor.classList.add('clicking');
+                        setTimeout(() => virtualCursor.classList.remove('clicking'), 100);
+
+                        const elem = document.elementFromPoint(ev.x, ev.y);
+                        if (elem && (elem.tagName === 'BUTTON' || elem.id === 'book-window' || elem.classList.contains('tab-close'))) {
+                            elem.click();
+                        }
+                        handleGameClick(ev.x, ev.y);
+                    } else if (ev.type === 'mouseup') {
+                        bucket.isDragging = false;
+                        isDraggingBook = false;
+                        isDraggingRealtek = false;
+                        isDraggingPongWindow = false;
+                        pong.isDraggingPaddle = false;
+                    }
+                    replayEventIndex++;
+                }
+
+                if (replayEventIndex >= lastCompletedRun.inputs.length) clearInterval(replayTimerInterval);
+            }, 10);
+        }
+
+        function setupStoryLevel(lvl) {
+            currentLevel = lvl;
+            applesCollected = 0;
+            counterEl.innerText = `Apples: 0 / ${totalApples}`;
+            checkAndUpdateHighScore(lvl);
+
+            levelEl.innerText = `LEVEL ${currentLevel}`;
+            levelEl.style.color = "#ffffff";
+
+            if (currentLevel >= 2) scheduleNextPopup();
+            if (currentLevel >= 3) setTimeout(spawnStalker, 2000);
+            if (currentLevel >= 4) rainDrop = null;
+            if (currentLevel >= 5) startBookMechanic();
+            if (currentLevel >= 6) startLevel6TaskManager();
+            if (currentLevel >= 7) startRealtekAudio();
+            if (currentLevel >= 8) startDuckHunt();
+            if (currentLevel >= 9) startPong();
+            if (currentLevel >= 10) startMinesweeper();
+            if (currentLevel >= 11) startTelefragger();
+        }
+
+        let lastTick = 0;
+        const tickRate = 110;
+
+        function updateSnake() {
+            dir = nextDir;
+            let newHead = { x: snake[0].x + dir.x, y: snake[0].y + dir.y };
+
+            if (newHead.x < 0) newHead.x = cols - 1;
+            if (newHead.x >= cols) newHead.x = 0;
+            if (newHead.y < 0) newHead.y = rows - 1;
+            if (newHead.y >= rows) newHead.y = 0;
+
+            const canMine = isCustomNight ? roster[10] === 1 : currentLevel >= 10;
+            if (canMine && checkMineCollision(newHead)) return;
+
+            let ateApple = false;
+            apples.forEach(apple => {
+                if (!apple.collected && apple.x === newHead.x && apple.y === newHead.y) {
+                    apple.collected = true;
+                    ateApple = true;
+                    applesCollected++;
+                    counterEl.innerText = `Apples: ${applesCollected} / ${totalApples}`;
+
+                    if (applesCollected >= totalApples) {
+                        if (isCustomNight) {
+                            alert("🏆 CONGRATULATIONS! YOU CONQUERED THIS CUSTOM NIGHT!");
+                        } else {
+                            if (currentLevel === 1) showLevel1Popup();
+                            else if (currentLevel < 11) startNextLevel(currentLevel + 1);
+                            else if (currentLevel === 11) {
+                                alert("🏆 UNBELIEVABLE! YOU SURVIVED ALL 11 LEVELS!");
+                            }
+                        }
+                    }
+                }
+            });
+
+            snake.unshift(newHead);
+            if (!ateApple) snake.pop();
+        }
+
+        function updateStalker() {
+            if (!stalker.active) return;
+            const targetPixelX = snake[0].x * GRID_SIZE + GRID_SIZE / 2;
+            const targetPixelY = snake[0].y * GRID_SIZE + GRID_SIZE / 2;
+            const dx = targetPixelX - (stalker.x + stalker.size / 2);
+            const dy = targetPixelY - (stalker.y + stalker.size / 2);
+            const dist = Math.sqrt(dx * dx + dy * dy);
+
+            stalker.speed += 0.001;
+            stalker.x += (dx / dist) * stalker.speed;
+            stalker.y += (dy / dist) * stalker.speed;
+
+            stalker.beepTimer++;
+            let beepDelay = Math.max(10, Math.floor(dist / 22));
+            if (stalker.beepTimer % beepDelay === 0) playBeep(420 + (280 - Math.min(280, dist)), 0.04, 'square', 0.15);
+
+            if (dist < (stalker.size / 2 + GRID_SIZE / 2 - 4)) {
+                triggerBSOD("TOUCHED_BY_YELLOW_SQUARE", "The Yellow Anomaly reached the snake's head.", "0x00000YEL");
+            }
+        }
+
+        function updateRainAndBucket() {
+            const canRain = isCustomNight ? roster[4] === 1 : currentLevel >= 4;
+            if (!canRain) return;
+
+            if (rainDrop === null && !rainCooldown) spawnRainDrop();
+
+            if (rainDrop !== null) {
+                rainDrop.y += rainDrop.speed;
+                if (
+                    rainDrop.y + rainDrop.height >= bucket.y &&
+                    rainDrop.y <= bucket.y + bucket.height &&
+                    rainDrop.x + rainDrop.width >= bucket.x &&
+                    rainDrop.x <= bucket.x + bucket.width
+                ) {
+                    playWaterBloop();
+                    rainDrop = null;
+                    rainCooldown = true;
+                    setTimeout(() => rainCooldown = false, gameRandom() * 3000 + 3000);
+                    return;
+                }
+
+                if (rainDrop.y > canvas.height - 10) {
+                    playFrySound();
+                    triggerBSOD("HARDWARE_WATER_DAMAGE_FATAL", "A water droplet hit the motherboard floor. Your PC fried.", "0x0000WTR_FRIED");
+                }
+            }
+        }
+
+        function draw() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // Apples
+            ctx.fillStyle = "#a82020";
+            apples.forEach(apple => {
+                if (!apple.collected) ctx.fillRect(apple.x * GRID_SIZE + 2, apple.y * GRID_SIZE + 2, GRID_SIZE - 4, GRID_SIZE - 4);
+            });
+
+            // Minesweeper Mines
+            const canMine = isCustomNight ? roster[10] === 1 : currentLevel >= 10;
+            if (canMine) {
+                mines.forEach(m => {
+                    const px = m.x * GRID_SIZE, py = m.y * GRID_SIZE;
+                    ctx.fillStyle = "#c0c0c0";
+                    ctx.fillRect(px + 2, py + 2, GRID_SIZE - 4, GRID_SIZE - 4);
+                    ctx.strokeStyle = "#000000";
+                    ctx.strokeRect(px + 2, py + 2, GRID_SIZE - 4, GRID_SIZE - 4);
+
+                    if (m.flagged) {
+                        ctx.fillStyle = "#ff0000";
+                        ctx.beginPath();
+                        ctx.moveTo(px + 10, py + 8);
+                        ctx.lineTo(px + 24, py + 14);
+                        ctx.lineTo(px + 10, py + 20);
+                        ctx.fill();
+                        ctx.strokeStyle = "#000";
+                        ctx.lineWidth = 2;
+                        ctx.beginPath();
+                        ctx.moveTo(px + 10, py + 8);
+                        ctx.lineTo(px + 10, py + 28);
+                        ctx.stroke();
+                        ctx.lineWidth = 1;
+                    } else {
+                        ctx.fillStyle = "#000000";
+                        ctx.beginPath();
+                        ctx.arc(px + GRID_SIZE / 2, py + GRID_SIZE / 2, 8, 0, Math.PI * 2);
+                        ctx.fill();
+                        ctx.fillRect(px + GRID_SIZE / 2 - 2, py + 4, 4, GRID_SIZE - 8);
+                        ctx.fillRect(px + 4, py + GRID_SIZE / 2 - 2, GRID_SIZE - 8, 4);
+                    }
+                });
+            }
+
+            // Snake
+            snake.forEach((seg, i) => {
+                ctx.fillStyle = i === 0 ? "#eeeeee" : "#888888";
+                ctx.fillRect(seg.x * GRID_SIZE + 1, seg.y * GRID_SIZE + 1, GRID_SIZE - 2, GRID_SIZE - 2);
+            });
+
+            // Darkness Fog
+            const hasDarkness = isCustomNight ? roster[1] === 1 : currentLevel > 0;
+            if (hasDarkness) {
+                const headX = snake[0].x * GRID_SIZE + (GRID_SIZE / 2);
+                const headY = snake[0].y * GRID_SIZE + (GRID_SIZE / 2);
+                let gradient = ctx.createRadialGradient(headX, headY, 20, headX, headY, 230);
+                gradient.addColorStop(0, 'rgba(0, 0, 0, 0)');
+                gradient.addColorStop(0.75, 'rgba(5, 5, 5, 0.96)');
+                gradient.addColorStop(1, 'rgba(5, 5, 5, 1)');
+                ctx.fillStyle = gradient;
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+            }
+
+            // Top Canvas
+            tCtx.clearRect(0, 0, topCanvas.width, topCanvas.height);
+
+            if (stalker.active) {
+                tCtx.fillStyle = "#ffff00";
+                tCtx.fillRect(stalker.x, stalker.y, stalker.size, stalker.size);
+                tCtx.strokeStyle = "#000";
+                tCtx.strokeRect(stalker.x, stalker.y, stalker.size, stalker.size);
+            }
+
+            const canBucket = isCustomNight ? roster[4] === 1 : currentLevel >= 4;
+            if (canBucket) {
+                tCtx.fillStyle = bucket.isDragging ? "#ffffff" : "#a0a0a0";
+                tCtx.fillRect(bucket.x, bucket.y, bucket.width, bucket.height);
+                tCtx.fillStyle = "#222222";
+                tCtx.fillRect(bucket.x + 4, bucket.y + 4, bucket.width - 8, bucket.height - 8);
+                tCtx.fillStyle = "#3fa9f5";
+                tCtx.fillRect(bucket.x + 6, bucket.y + 12, bucket.width - 12, bucket.height - 14);
+
+                if (rainDrop !== null) {
+                    tCtx.fillStyle = "#00d4ff";
+                    tCtx.fillRect(rainDrop.x, rainDrop.y, rainDrop.width, rainDrop.height);
+                }
+            }
+
+            if (duck.active) {
+                tCtx.fillStyle = "#d87d22";
+                tCtx.fillRect(duck.x, duck.y, duck.size, duck.size - 8);
+                tCtx.fillStyle = "#00ff88";
+                tCtx.fillRect(duck.x + duck.size - 6, duck.y - 6, 12, 12);
+                tCtx.fillStyle = "#ffff00";
+                tCtx.fillRect(duck.x + duck.size + 6, duck.y - 2, 8, 5);
+                tCtx.fillStyle = "#ffffff";
+                const wingBob = Math.sin(duck.wave * 2) * 6;
+                tCtx.fillRect(duck.x + 6, duck.y - 4 + wingBob, 12, 8);
+            }
+
+            if (telefragger.phase === 'teleport' || telefragger.phase === 'drift') {
+                tCtx.fillStyle = "#00ffff";
+                tCtx.fillRect(telefragger.x, telefragger.y, telefragger.size, telefragger.size);
+                tCtx.fillStyle = "#000000";
+                tCtx.fillRect(telefragger.x + 8, telefragger.y + 10, 6, 8);
+                tCtx.fillRect(telefragger.x + 22, telefragger.y + 10, 6, 8);
+            }
+        }
+
+        function gameLoop(currentTime) {
+            if (!gameActive) return;
+            if (currentTime - lastTick >= tickRate) {
+                updateSnake();
+                lastTick = currentTime;
+            }
+            updateStalker();
+            updateRainAndBucket();
+            updateDuck();
+            if (pong.active) updatePong();
+            updateTelefragger();
+
+            draw();
+            requestAnimationFrame(gameLoop);
+        }
+
+        function showLevel1Popup() {
+            gameActive = false;
+            gameContainer.style.display = 'none';
+            xpDesktop.style.display = 'block';
+            playBeep(140, 0.4);
+        }
+
+        function startNextLevel(targetLevel) {
+            xpDesktop.style.display = 'none';
+            flashBang.style.display = 'block';
+            playBeep(60, 0.8, 'sawtooth');
+
+            setTimeout(() => {
+                flashBang.style.display = 'none';
+                spawnApples();
+                gameContainer.style.display = 'block';
+                gameActive = true;
+                setupStoryLevel(targetLevel);
+                requestAnimationFrame(gameLoop);
+            }, 600);
+        }
+
+        let targetNumber = 0, currentCount = 0, isCountingDown = false, countingInterval = null, panicTimeout = null, popupState = 'idle', errActive = false;
+
+        function scheduleNextPopup() {
+            if (!gameActive || errActive) return;
+            if (!isCustomNight && currentLevel < 2) return;
+            if (isCustomNight && roster[2] === 0) return;
+
+            const delay = gameRandom() * 4000 + 4500;
+            setTimeout(() => { if (gameActive && !errActive) launchErr(); }, delay);
+        }
+
+        function launchErr() {
+            errActive = true;
+            popupState = 'memorize';
+            hehePopup.className = "xp-window";
+            hehePopup.style.display = 'block';
+
+            isCountingDown = gameRandom() > 0.5;
+            if (isCountingDown) {
+                targetNumber = Math.floor(gameRandom() * 4) + 2;
+                currentCount = targetNumber + Math.floor(gameRandom() * 4) + 3;
+                hehePopup.classList.add('err-countdown');
+            } else {
+                targetNumber = Math.floor(gameRandom() * 5) + 3;
+                currentCount = 1;
+            }
+
+            heheText.innerText = `REMEMBER "${targetNumber}"`;
+            playBeep(220, 0.3, 'square');
+
+            setTimeout(() => {
+                if (popupState !== 'memorize') return;
+                popupState = 'counting';
+                startCounting();
+            }, 1800);
+        }
+
+        function startCounting() {
+            heheText.innerText = `COUNT: ${currentCount}`;
+            playBeep(isCountingDown ? 280 : 350, 0.08);
+
+            countingInterval = setInterval(() => {
+                if (isCountingDown) currentCount--;
+                else currentCount++;
+
+                heheText.innerText = `COUNT: ${currentCount}`;
+                playBeep(isCountingDown ? 280 : 350, 0.08);
+
+                if (currentCount === targetNumber) {
+                    clearInterval(countingInterval);
+                    enterPanicWindow();
+                }
+            }, 750);
+        }
+
+        function enterPanicWindow() {
+            popupState = 'panic';
+            hehePopup.classList.remove('err-countdown');
+            hehePopup.classList.add('err-panic');
+            heheText.innerText = `CLICK OK: "${targetNumber}"!`;
+            playBeep(500, 0.2, 'sawtooth');
+
+            panicTimeout = setTimeout(() => {
+                if (popupState === 'panic') triggerErrMeltdown();
+            }, 1000);
+        }
+
+        function handlePopupClick() {
+            if (popupState === 'panic') {
+                clearTimeout(panicTimeout);
+                playBeep(650, 0.2);
+                closeErr();
+            } else if (popupState === 'counting') {
+                clearInterval(countingInterval);
+                triggerBSOD("ERR_CLICKED_PREMATURELY", "You clicked OK before the count finished.", "0x00000TOO_FAST");
+            }
+        }
+
+        function closeErr() {
+            hehePopup.style.display = 'none';
+            hehePopup.className = "xp-window";
+            popupState = 'idle';
+            errActive = false;
+            scheduleNextPopup();
+        }
+
+        function triggerErrMeltdown() {
+            gameActive = false;
+            popupState = 'meltdown';
+            playGlitchScreech();
+            hehePopup.classList.add('shake-crazy');
+
+            let cloneCount = 0;
+            const cascadeInterval = setInterval(() => {
+                const clone = hehePopup.cloneNode(true);
+                clone.classList.add('shake-crazy');
+                clone.style.top = `${15 + cloneCount * 4}%`;
+                clone.style.left = `${20 + cloneCount * 4}%`;
+                gameContainer.appendChild(clone);
+                playBeep(150 + cloneCount * 50, 0.08, 'sawtooth');
+
+                cloneCount++;
+                if (cloneCount > 10) {
+                    clearInterval(cascadeInterval);
+                    setTimeout(() => triggerBSOD("ERR_CASCADE_OVERFLOW", "Failed to click OK in 1 second. ERR destroyed the system.", "0x00000ERR_MELTDOWN"), 600);
+                }
+            }, 70);
+        }
+
+        function triggerBSOD(code, desc, tech) {
+            gameActive = false;
+            saveRunRecording();
+            stopLoudAudioSound();
+
+            clearInterval(countingInterval);
+            if (tabChaosInterval) clearInterval(tabChaosInterval);
+            if (audioSpikeInterval) clearInterval(audioSpikeInterval);
+            if (eqAnimInterval) clearInterval(eqAnimInterval);
+            clearTimeout(duckSpawnTimeout);
+            clearTimeout(panicTimeout);
+            clearTimeout(redTimer);
+            clearTimeout(moodCycleTimeout);
+            clearTimeout(audioAngerTimer);
+            if (tabOverheatTimer) clearTimeout(tabOverheatTimer);
+
+            hehePopup.style.display = 'none';
+            bookWindow.style.display = 'none';
+            realtekWindow.style.display = 'none';
+            pongWindow.style.display = 'none';
+            tabBar.style.display = 'none';
+            duckHud.style.display = 'none';
+            replayBanner.style.display = 'none';
+            virtualCursor.style.display = 'none';
+            isReplaying = false;
+
+            stalker.active = false;
+            duck.active = false;
+            pong.active = false;
+            telefragger.active = false;
+            telefragger.phase = 'idle';
+            tCtx.clearRect(0, 0, topCanvas.width, topCanvas.height);
+            
+            bsodTitle.innerText = `*** STOP: ${code} ***`;
+            bsodDesc.innerText = desc || "A fatal system crash has occurred.";
+            bsodScore.innerText = `LEVEL REACHED: LEVEL ${currentLevel} | HIGHEST LEVEL: LEVEL ${highestLevel}`;
+            bsodTech.innerText = `*** STOP: 0xDEADDEAD (${tech || '0x00000000'}, 0xF7A38240, 0xF7A37E40)`;
+            
+            bsodScreen.style.display = 'block';
+            playBeep(60, 1.5, 'sawtooth', 0.9);
+        }
+    </script>
+</body>
+</html>
