@@ -5,7 +5,7 @@
     <title>Multi TASK: MULTIPLAYER CO-OP</title>
     <script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
     <style>
-        /* AUTHENTIC RETRO XP CURSOR */
+        /* RETRO XP CURSOR */
         * {
             cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 22 22"><path d="M1 1 L1 17 L5.5 13 L8.5 20 L11 19 L8 12 L13.5 12 Z" fill="white" stroke="black" stroke-width="1.2" stroke-linejoin="round"/></svg>'), auto !important;
         }
@@ -39,12 +39,12 @@
         #main-logo {
             max-width: 340px;
             width: 90%;
-            display: block;
+            display: none;
             margin: 0 auto 10px auto;
         }
 
         .wacky-fallback-title {
-            display: none;
+            display: block;
             font-family: Impact, "Comic Sans MS", fantasy;
             font-size: 38px;
             margin-bottom: 5px;
@@ -241,20 +241,12 @@
         .xp-button-row { display: flex; justify-content: center; gap: 15px; }
         .xp-btn { min-width: 75px; padding: 4px 14px; font-size: 12px; font-family: "Tahoma", sans-serif; background: #ece9d8; border: 1px solid #003c74; border-radius: 3px; box-shadow: inset 0 0 0 1px #fff; cursor: pointer; }
 
-        /* POPUPS & WINDOWS */
         #hehe-popup { top: 45%; left: 50%; transform: translate(-50%, -50%); width: 440px; }
         .err-countdown .xp-title-bar { background: #008a20 !important; }
         .err-countdown .xp-text { color: #007718; }
         .err-panic .xp-title-bar { background: #b30000 !important; }
         .err-panic .xp-body { background: #ffd6d6 !important; }
         .err-panic .xp-text { color: #cc0000 !important; }
-
-        .shake-crazy { animation: violentShake 0.05s infinite; }
-        @keyframes violentShake {
-            0% { transform: translate(-50%, -50%) translate(-6px, 4px); }
-            50% { transform: translate(-50%, -50%) translate(6px, -4px); }
-            100% { transform: translate(-50%, -50%) translate(-4px, -6px); }
-        }
 
         #book-window { top: 20%; left: 15%; width: 260px; height: 160px; cursor: pointer !important; }
         #book-body { padding: 15px; height: calc(100% - 30px); display: flex; flex-direction: column; justify-content: center; align-items: center; background: #fffef2; font-size: 13px; text-align: center; pointer-events: none; }
@@ -331,8 +323,9 @@
 
     <!-- 1. LOBBY BOX -->
     <div id="lobby-container">
-        <img id="main-logo" src="main/assets/common/logo.png" alt="Multi TASK" 
-             onerror="this.style.display='none'; document.getElementById('wacky-title-box').style.display='block';">
+        <!-- Logo Image with Clean Silent Fallback -->
+        <img id="main-logo" src="logo.png" alt="Multi TASK" 
+             onload="this.style.display='block'; document.getElementById('wacky-title-box').style.display='none';">
         
         <div id="wacky-title-box" class="wacky-fallback-title">
             <span class="title-multi">Multi</span><span class="title-task">TASK</span>
@@ -400,14 +393,12 @@
         <div id="duck-hud">DUCKS ESCAPED: <span id="escaped-count">0</span> / 3</div>
         <div id="spectate-banner">💀 YOU DIED - SPECTATING SURVIVORS...</div>
 
-        <!-- TAB BAR (L6) -->
         <div id="tab-bar-container">
             <div id="tabs-list"></div>
             <button id="new-tab-btn" onclick="sendAction('tab_add')">+</button>
             <div id="task-manager-warning">TASK MGR: 5/5 TABS (NORMAL)</div>
         </div>
 
-        <!-- PONG.EXE WINDOW (L9) -->
         <div id="pong-window" class="xp-window">
             <div class="xp-title-bar" id="pong-title-bar"><span class="xp-title">🏓 Pong.exe vs AI</span></div>
             <canvas id="pong-canvas" width="200" height="150"></canvas>
@@ -415,7 +406,6 @@
 
         <canvas id="mazeCanvas"></canvas>
 
-        <!-- ERR POPUP (L2) -->
         <div id="hehe-popup" class="xp-window" style="display:none;">
             <div class="xp-title-bar"><span class="xp-title">HEHEHEHEHEHEHEHEHEHEHEHEHEHEHEHEHEHEHEHEHEHEHEHEHEHEHEHE</span></div>
             <div class="xp-body">
@@ -427,13 +417,11 @@
             </div>
         </div>
 
-        <!-- READER (L5) -->
         <div id="book-window" class="xp-window" onclick="sendAction('reader_pacify')">
             <div class="xp-title-bar" id="book-title-bar"><span class="xp-title">Reader (Click to calm)</span><div style="display:flex; align-items:center;"><div id="mood-dot"></div></div></div>
             <div id="book-body"><div id="book-mood-status" style="font-weight: bold; color: #333;">STATUS: HAPPY</div><div style="color: #666; font-size: 11px; margin-top: 5px;">Click ANYWHERE to pacify!</div></div>
         </div>
 
-        <!-- REALTEK (L7) -->
         <div id="realtek-window" class="xp-window">
             <div class="realtek-title-bar" id="realtek-title-bar"><span style="color:white; font-size:12px; font-weight:bold; margin-left:4px;">🦀 Realtek HD Audio Output</span></div>
             <div id="realtek-body">
@@ -442,7 +430,6 @@
             </div>
         </div>
 
-        <!-- DUCK HUNT DOG POPUP (L8) -->
         <div id="dog-popup"><div>HEH HEH HEH!</div><div style="font-size:12px; margin-top:6px; font-family:monospace;">[THE DOG LAUGHS]</div></div>
 
         <canvas id="topCanvas"></canvas>
@@ -463,8 +450,33 @@
 
     <script>
         // ====================================================
-        //       PEERJS MULTIPLAYER NETWORKING CORE
+        //   ALL CORE STATE VARIABLES INITIALIZED AT THE TOP
         // ====================================================
+        let currentLevel = 1;
+        let totalApples = 10;
+        let applesCollected = 0;
+        let gameActive = false;
+        let isAlive = true;
+        let mySnake = [{ x: 10, y: 10 }, { x: 9, y: 10 }, { x: 8, y: 10 }];
+        let myDir = { x: 1, y: 0 };
+        let nextMyDir = { x: 1, y: 0 };
+        let apples = [];
+
+        // Threat States (Declared BEFORE any function runs)
+        let bucket = { x: window.innerWidth / 2 - 45, y: window.innerHeight - 40, width: 90, height: 26, isDragging: false, dragOffsetX: 0 };
+        let rainDrop = null, rainCooldown = false;
+        let stalker = { active: false, x: 0, y: 0, size: 26, speed: 1.3 };
+        let duck = { active: false, x: -40, y: 200, size: 28, speedX: 2.8, wave: 0 };
+        let escapedDucks = 0, duckSpawnTimeout = null;
+        let pong = { active: false, ballX: 100, ballY: 75, ballVx: 2.3, ballVy: 1.4, playerY: 55, aiY: 55, paddleH: 36, paddleW: 8, isDraggingPaddle: false, dragOffsetY: 0 };
+        let mines = [];
+        let telefragger = { active: false, phase: 'idle', targetId: '', targetX: 0, targetY: 0, x: 0, y: 0, size: 38 };
+        let moodState = 'green';
+        let isAudioLoud = false;
+        const TARGET_TABS = 5;
+        let activeTabs = ["snake.html", "realtek_hd", "duck_hunt", "coolmath", "subway.mp4"];
+
+        // PeerJS Networking Variables
         let peer = null;
         let connections = [];
         let hostConn = null;
@@ -472,12 +484,29 @@
         let myId = '';
         let myUsername = 'Player';
         let myColor = '#ffffff';
-
         let players = {};
-        let isAlive = true;
-        let currentLevel = 1;
 
-        // Sound System
+        // Canvas & Dimensions setup
+        const canvas = document.getElementById('mazeCanvas');
+        const ctx = canvas.getContext('2d');
+        const topCanvas = document.getElementById('topCanvas');
+        const tCtx = topCanvas.getContext('2d');
+        const GRID_SIZE = 36;
+        let cols, rows;
+
+        function resize() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+            topCanvas.width = window.innerWidth;
+            topCanvas.height = window.innerHeight;
+            cols = Math.floor(canvas.width / GRID_SIZE);
+            rows = Math.floor(canvas.height / GRID_SIZE);
+            if (bucket) bucket.y = canvas.height - 40;
+        }
+        window.addEventListener('resize', resize);
+        resize(); // SAFE NOW: Bucket is already declared!
+
+        // Audio System
         const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
         function playBeep(freq, duration, type='triangle', vol=0.5) {
             if (audioCtx.state === 'suspended') audioCtx.resume();
@@ -561,6 +590,7 @@
             localStorage.setItem('snake_mp_name', myUsername);
         }
 
+        // --- NETWORKING: HOST ROOM ---
         function hostRoom() {
             saveProfile();
             isHost = true;
@@ -598,6 +628,7 @@
             });
         }
 
+        // --- NETWORKING: JOIN ROOM ---
         function joinRoom() {
             saveProfile();
             const inputCode = document.getElementById('room-input').value.trim();
@@ -700,8 +731,9 @@
             }
         }
 
+        // FIXED START BUTTON HANDLER
         function broadcastStartGame() {
-            const pCount = Object.keys(players).length;
+            const pCount = Math.max(1, Object.keys(players).length);
             totalApples = pCount * 10;
             currentLevel = 1;
             spawnApplesMultiplayer(totalApples);
@@ -715,36 +747,6 @@
             broadcast(startPayload);
             initMultiplayerGame();
         }
-
-        // ====================================================
-        //       GAMEPLAY CANVAS & SHARED THREATS
-        // ====================================================
-        const canvas = document.getElementById('mazeCanvas');
-        const ctx = canvas.getContext('2d');
-        const topCanvas = document.getElementById('topCanvas');
-        const tCtx = topCanvas.getContext('2d');
-
-        const GRID_SIZE = 36;
-        let cols, rows;
-        function resize() {
-            canvas.width = window.innerWidth;
-            canvas.height = window.innerHeight;
-            topCanvas.width = window.innerWidth;
-            topCanvas.height = window.innerHeight;
-            cols = Math.floor(canvas.width / GRID_SIZE);
-            rows = Math.floor(canvas.height / GRID_SIZE);
-            bucket.y = canvas.height - 40;
-        }
-        window.addEventListener('resize', resize);
-        resize();
-
-        let mySnake = [{ x: 10, y: 10 }, { x: 9, y: 10 }, { x: 8, y: 10 }];
-        let myDir = { x: 1, y: 0 };
-        let nextMyDir = { x: 1, y: 0 };
-        let apples = [];
-        let totalApples = 10;
-        let applesCollected = 0;
-        let gameActive = false;
 
         function spawnApplesMultiplayer(count) {
             apples = [];
@@ -765,9 +767,9 @@
 
             const playerIndex = Object.keys(players).indexOf(myId);
             mySnake = [
-                { x: 10, y: 8 + playerIndex * 3 },
-                { x: 9, y: 8 + playerIndex * 3 },
-                { x: 8, y: 8 + playerIndex * 3 }
+                { x: 10, y: 8 + (playerIndex >= 0 ? playerIndex : 0) * 3 },
+                { x: 9, y: 8 + (playerIndex >= 0 ? playerIndex : 0) * 3 },
+                { x: 8, y: 8 + (playerIndex >= 0 ? playerIndex : 0) * 3 }
             ];
 
             setupMultiplayerLevel(currentLevel);
@@ -783,36 +785,10 @@
             document.getElementById('mp-level').innerText = currentLevel;
         }
 
-        // ====================================================
-        //       ALL 11 SHARED THREATS CONTROLLERS
-        // ====================================================
-        // L3: Stalker
-        let stalker = { active: false, x: 0, y: 0, size: 26, speed: 1.3 };
-        // L4: Bucket & Rain
-        let bucket = { x: window.innerWidth / 2 - 45, y: window.innerHeight - 40, width: 90, height: 26, isDragging: false, dragOffsetX: 0 };
-        let rainDrop = null, rainCooldown = false;
-        // L5: Reader
-        let moodState = 'green', redTimer = null, moodCycleTimeout = null;
-        // L6: Tabs
-        const TARGET_TABS = 5;
-        let activeTabs = ["snake.html", "realtek_hd", "duck_hunt", "coolmath", "subway.mp4"];
-        let tabOverheatTimer = null, tabChaosInterval = null;
-        // L7: Realtek
-        let isAudioLoud = false, audioSpikeInterval = null, audioAngerTimer = null, eqAnimInterval = null;
-        // L8: Duck Hunt
-        let duck = { active: false, x: -40, y: 200, size: 28, speedX: 2.8, wave: 0 };
-        let escapedDucks = 0, duckSpawnTimeout = null;
-        // L9: Pong.exe
-        let pong = { active: false, ballX: 100, ballY: 75, ballVx: 2.3, ballVy: 1.4, playerY: 55, aiY: 55, paddleH: 36, paddleW: 8, isDraggingPaddle: false, dragOffsetY: 0 };
-        // L10: Minesweeper
-        let mines = [];
-        // L11: Telefragger
-        let telefragger = { active: false, phase: 'idle', targetId: '', targetX: 0, targetY: 0, x: 0, y: 0, size: 38 };
-
+        // --- LEVEL & THREAT SETUPS ---
         function setupMultiplayerLevel(lvl) {
             currentLevel = lvl;
             if (isHost) {
-                // Host starts threat dispatchers
                 if (lvl >= 2) scheduleHostErr();
                 if (lvl >= 3) setTimeout(spawnHostStalker, 2000);
                 if (lvl >= 5) hostStartReader();
@@ -831,7 +807,6 @@
             if (lvl >= 9) { document.getElementById('pong-window').style.display = 'block'; pong.active = true; }
         }
 
-        // --- ACTION DISPATCHER (ANY PLAYER TAKES ACTION) ---
         function applyThreatAction(data) {
             const act = data.action;
             if (act === 'stalker_swat') {
@@ -864,7 +839,7 @@
                 activeTabs.splice(data.index, 1);
                 renderTabs();
             } else if (act === 'tab_add') {
-                activeTabs.push("browser_tab_" + activeTabs.length);
+                activeTabs.push("tab_" + activeTabs.length);
                 renderTabs();
             } else if (act === 'err_click') {
                 document.getElementById('hehe-popup').style.display = 'none';
@@ -872,7 +847,6 @@
             }
         }
 
-        // --- HOST THREAT TIMERS & LOGIC ---
         function scheduleHostErr() {
             if (!gameActive || currentLevel < 2) return;
             setTimeout(() => {
@@ -938,7 +912,6 @@
 
                 setTimeout(() => {
                     if (isAudioLoud && gameActive) {
-                        // Enrages Reader
                         moodState = 'red';
                         document.getElementById('mood-dot').style.backgroundColor = '#ff0000';
                     }
@@ -977,7 +950,6 @@
                 const living = Object.keys(players).filter(id => players[id].alive);
                 if (living.length === 0) return;
 
-                // Pick a target player cursor
                 const chosenId = living[Math.floor(Math.random() * living.length)];
                 telefragger.targetId = chosenId;
                 telefragger.active = true;
@@ -1021,7 +993,7 @@
         }
 
         // ====================================================
-        //       LOCAL PLAYER CONTROLS & SPECTATING
+        //       LOCAL PLAYER CONTROLS
         // ====================================================
         window.addEventListener('keydown', e => {
             if (!isAlive) return;
@@ -1042,7 +1014,6 @@
             localMouse.x = e.clientX;
             localMouse.y = e.clientY;
 
-            // Dragging Bucket
             if (bucket.isDragging) {
                 bucket.x = e.clientX - bucket.dragOffsetX;
                 if (bucket.x < 0) bucket.x = 0;
@@ -1050,7 +1021,6 @@
                 sendAction('bucket_move', { x: bucket.x });
             }
 
-            // Dragging Pong Paddle
             if (pong.isDraggingPaddle) {
                 const rect = document.getElementById('pong-window').getBoundingClientRect();
                 pong.playerY = Math.max(2, Math.min(150 - pong.paddleH - 2, e.clientY - rect.top - 24 - pong.dragOffsetY));
@@ -1061,7 +1031,6 @@
         window.addEventListener('mousedown', e => {
             const mx = e.clientX, my = e.clientY;
 
-            // Minesweeper Click
             for (let i = 0; i < mines.length; i++) {
                 const m = mines[i];
                 if (!m.flagged && mx >= m.x * GRID_SIZE && mx <= m.x * GRID_SIZE + GRID_SIZE && my >= m.y * GRID_SIZE && my <= m.y * GRID_SIZE + GRID_SIZE) {
@@ -1070,20 +1039,17 @@
                 }
             }
 
-            // Shoot Duck
             if (duck.active) {
                 const dx = mx - (duck.x + duck.size / 2), dy = my - (duck.y + duck.size / 2);
                 if (Math.sqrt(dx * dx + dy * dy) < 38) { sendAction('duck_shot'); return; }
             }
 
-            // Grab Bucket
             if (currentLevel >= 4 && mx >= bucket.x && mx <= bucket.x + bucket.width && my >= bucket.y && my <= bucket.y + bucket.height) {
                 bucket.isDragging = true;
                 bucket.dragOffsetX = mx - bucket.x;
                 return;
             }
 
-            // Grab Pong Paddle
             if (pong.active) {
                 const rect = document.getElementById('pong-window').getBoundingClientRect();
                 const rx = mx - rect.left, ry = my - rect.top - 24;
@@ -1094,7 +1060,6 @@
                 }
             }
 
-            // Swat Stalker
             if (stalker.active) {
                 const dx = mx - (stalker.x + stalker.size / 2), dy = my - (stalker.y + stalker.size / 2);
                 if (Math.sqrt(dx * dx + dy * dy) < 42) { sendAction('stalker_swat'); return; }
@@ -1127,9 +1092,6 @@
             }
         }
 
-        // ====================================================
-        //       GAME ENGINE LOOP & RENDERING
-        // ====================================================
         let lastSnakeTick = 0;
         const tickRate = 110;
 
@@ -1143,7 +1105,6 @@
             if (newHead.y < 0) newHead.y = rows - 1;
             if (newHead.y >= rows) newHead.y = 0;
 
-            // Minesweeper check
             if (currentLevel >= 10) {
                 for (let m of mines) {
                     if (!m.flagged && m.x === newHead.x && m.y === newHead.y) {
@@ -1154,13 +1115,11 @@
                 }
             }
 
-            // Stalker check
             if (stalker.active && currentLevel >= 3) {
                 const dist = Math.sqrt(Math.pow(stalker.x - (newHead.x * GRID_SIZE), 2) + Math.pow(stalker.y - (newHead.y * GRID_SIZE), 2));
                 if (dist < 24) { handleLocalPlayerDeath("STALKER"); return; }
             }
 
-            // Apple check
             apples.forEach(apple => {
                 if (!apple.collected && apple.x === newHead.x && apple.y === newHead.y) {
                     apple.collected = true;
@@ -1171,7 +1130,6 @@
 
                     updateHud();
 
-                    // LEVEL CLEAR CHECK
                     if (applesCollected >= totalApples) {
                         if (isHost) {
                             const nextLvl = currentLevel + 1;
@@ -1187,7 +1145,6 @@
             mySnake.unshift(newHead);
             mySnake.pop();
 
-            // Broadcast packet
             if (players[myId]) {
                 players[myId].snake = mySnake;
                 players[myId].x = localMouse.x;
@@ -1206,12 +1163,10 @@
             applesCollected = 0;
             updateHud();
 
-            // Revive all dead players for the next level!
             isAlive = true;
             document.getElementById('spectate-banner').style.display = 'none';
             Object.values(players).forEach(p => p.alive = true);
 
-            // Flashbang
             document.getElementById('flash-bang').style.display = 'block';
             playBeep(60, 0.8, 'sawtooth');
             setTimeout(() => {
@@ -1221,9 +1176,8 @@
         }
 
         function updateMultiplayerThreats() {
-            // Stalker homing
             if (stalker.active) {
-                const livingSnakes = Object.values(players).filter(p => p.alive && p.snake.length > 0);
+                const livingSnakes = Object.values(players).filter(p => p.alive && p.snake && p.snake.length > 0);
                 if (livingSnakes.length > 0) {
                     const target = livingSnakes[0].snake[0];
                     const tx = target.x * GRID_SIZE, ty = target.y * GRID_SIZE;
@@ -1234,7 +1188,6 @@
                 }
             }
 
-            // Rain
             if (currentLevel >= 4) {
                 if (rainDrop === null && !rainCooldown) {
                     rainDrop = { x: Math.random() * (canvas.width - 80) + 40, y: -10, speed: 3.4 };
@@ -1253,7 +1206,6 @@
                 }
             }
 
-            // Ducks
             if (duck.active) {
                 duck.x += duck.speedX;
                 duck.wave += 0.1;
@@ -1270,7 +1222,6 @@
                 }
             }
 
-            // Pong
             if (pong.active) {
                 pong.aiY += ((pong.ballY - pong.paddleH / 2) - pong.aiY) * 0.12;
                 pong.ballX += pong.ballVx;
@@ -1337,7 +1288,7 @@
                 ctx.fillRect(0, 0, canvas.width, canvas.height);
             }
 
-            // Top Canvas (Ducks, Bucket, Telefragger, Peer Cursors)
+            // Top Canvas (Threats & Cursors)
             tCtx.clearRect(0, 0, topCanvas.width, topCanvas.height);
 
             if (stalker.active) {
@@ -1423,10 +1374,12 @@
 
         function multiplayerGameLoop(currentTime) {
             if (!gameActive) return;
+
             if (currentTime - lastSnakeTick >= tickRate) {
                 updateMySnake();
                 lastSnakeTick = currentTime;
             }
+
             updateMultiplayerThreats();
             drawMultiplayer();
             requestAnimationFrame(multiplayerGameLoop);
