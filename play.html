@@ -5,7 +5,7 @@
     <title>Multi TASK: MULTIPLAYER CO-OP</title>
     <script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
     <style>
-        /* RETRO XP CURSOR */
+        /* AUTHENTIC RETRO XP CURSOR */
         * {
             cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 22 22"><path d="M1 1 L1 17 L5.5 13 L8.5 20 L11 19 L8 12 L13.5 12 Z" fill="white" stroke="black" stroke-width="1.2" stroke-linejoin="round"/></svg>'), auto !important;
         }
@@ -20,13 +20,13 @@
             user-select: none;
         }
 
-        /* 1. LOBBY CONTAINER */
+        /* 1. RETRO LOBBY (NEWGROUNDS / XP AESTHETIC) */
         #lobby-container {
             position: absolute;
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            width: 500px;
+            width: 480px;
             background: #ece9d8;
             border: 4px solid #000000;
             border-radius: 6px;
@@ -34,8 +34,6 @@
             box-shadow: 6px 6px 0px #000000;
             text-align: center;
             z-index: 1000;
-            max-height: 90vh;
-            overflow-y: auto;
         }
 
         #main-logo {
@@ -61,10 +59,10 @@
             font-weight: bold;
             font-size: 13px;
             color: #555;
-            margin-bottom: 12px;
+            margin-bottom: 15px;
         }
 
-        .form-group { margin-bottom: 10px; text-align: left; }
+        .form-group { margin-bottom: 12px; text-align: left; }
         .form-group label { display: block; font-size: 11px; font-weight: bold; color: #222; margin-bottom: 3px; font-family: monospace; }
         .form-input {
             width: 100%;
@@ -86,7 +84,7 @@
         .btn-row { display: flex; gap: 10px; margin-top: 15px; }
         .lobby-btn {
             flex: 1;
-            padding: 9px;
+            padding: 10px;
             font-size: 14px;
             font-family: Impact, sans-serif;
             letter-spacing: 1px;
@@ -98,7 +96,7 @@
         .lobby-btn:active { transform: translate(2px, 2px); box-shadow: 1px 1px 0px #000; }
         .btn-host { background: #ffaa00; color: black; }
         .btn-join { background: #3593ff; color: white; }
-        .btn-legacy { background: #ffffff; color: black; font-size: 12px; padding: 7px; box-shadow: 2px 2px 0px #000; }
+        .btn-legacy { background: #ffffff; color: black; font-size: 13px; padding: 8px; box-shadow: 2px 2px 0px #000; }
 
         /* 4-PLAYER SLOTS */
         #room-screen { display: none; margin-top: 10px; }
@@ -111,13 +109,13 @@
             background: #fff;
             padding: 6px;
             border: 2px solid #000;
-            margin: 8px 0;
+            margin: 10px 0;
         }
-        .slots-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 6px; margin: 10px 0; }
+        .slots-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin: 14px 0; }
         .player-slot {
             background: #ffffff;
             border: 2px solid #000000;
-            padding: 6px 8px;
+            padding: 8px;
             display: flex;
             align-items: center;
             gap: 8px;
@@ -129,45 +127,6 @@
         }
         .player-slot.empty { background: #dddddd; color: #888888; border-style: dashed; box-shadow: none; }
         .slot-cursor-icon { width: 14px; height: 14px; border-radius: 2px; border: 1px solid #000; }
-
-        /* MULTIPLAYER MATCH MODE SELECTOR */
-        #mode-select-box {
-            background: #fff;
-            border: 2px solid #000;
-            padding: 10px;
-            margin: 10px 0;
-            text-align: left;
-        }
-        .mode-toggle-btns { display: flex; gap: 6px; margin-top: 6px; }
-        .mode-btn {
-            flex: 1;
-            padding: 6px;
-            font-family: Impact, sans-serif;
-            font-size: 13px;
-            border: 2px solid #000;
-            background: #ddd;
-            cursor: pointer;
-        }
-        .mode-btn.active {
-            background: #00ff88;
-            color: black;
-            box-shadow: 2px 2px 0px #000;
-        }
-
-        /* CUSTOM THREAT TOGGLES */
-        #custom-threats-panel {
-            display: none;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 6px;
-            margin-top: 8px;
-            font-family: monospace;
-            font-size: 11px;
-            font-weight: bold;
-            background: #eee;
-            padding: 8px;
-            border: 1px solid #999;
-        }
-        .threat-checkbox { display: flex; align-items: center; gap: 4px; }
 
         /* 2. GAMEPLAY CANVAS & HUDS */
         #game-container {
@@ -253,7 +212,7 @@
             z-index: 2000;
         }
 
-        /* 3. WINDOWS XP DIALOGS */
+        /* 3. WINDOWS XP DIALOGS & ANIMATED STATES */
         .xp-window {
             position: absolute;
             background: #ece9d8;
@@ -264,7 +223,6 @@
             font-family: "Tahoma", sans-serif;
             overflow: hidden;
             z-index: 500;
-            display: none; /* STRICTLY HIDDEN UNTIL ITS LEVEL */
         }
 
         .xp-title-bar {
@@ -283,29 +241,63 @@
         .xp-button-row { display: flex; justify-content: center; gap: 15px; }
         .xp-btn { min-width: 75px; padding: 4px 14px; font-size: 12px; font-family: "Tahoma", sans-serif; background: #ece9d8; border: 1px solid #003c74; border-radius: 3px; box-shadow: inset 0 0 0 1px #fff; cursor: pointer; }
 
+        /* ERR FULL STATES RESTORED */
         #hehe-popup { top: 45%; left: 50%; transform: translate(-50%, -50%); width: 440px; }
-        .err-countdown .xp-title-bar { background: #008a20 !important; }
-        .err-countdown .xp-text { color: #007718; }
-        .err-panic .xp-title-bar { background: #b30000 !important; }
+        .err-countdown .xp-title-bar { background: linear-gradient(180deg, #008a20 0%, #2ecc71 40%, #008a20 100%) !important; }
+        .err-countdown .xp-text { color: #007718 !important; }
+        
+        .err-panic .xp-title-bar { background: linear-gradient(180deg, #b30000 0%, #ff3333 40%, #800000 100%) !important; }
         .err-panic .xp-body { background: #ffd6d6 !important; }
-        .err-panic .xp-text { color: #cc0000 !important; }
+        .err-panic .xp-text {
+            color: #cc0000 !important;
+            animation: textPulse 0.2s infinite alternate;
+        }
+        @keyframes textPulse {
+            from { transform: scale(1); }
+            to { transform: scale(1.1); }
+        }
 
+        .shake-crazy { animation: violentShake 0.05s infinite; }
+        @keyframes violentShake {
+            0% { transform: translate(-50%, -50%) translate(-8px, 6px); }
+            25% { transform: translate(-50%, -50%) translate(10px, -8px); }
+            50% { transform: translate(-50%, -50%) translate(-12px, -5px); }
+            75% { transform: translate(-50%, -50%) translate(8px, 10px); }
+            100% { transform: translate(-50%, -50%) translate(-6px, -10px); }
+        }
+
+        /* READER */
         #book-window { top: 20%; left: 15%; width: 260px; height: 160px; cursor: pointer !important; }
         #book-body { padding: 15px; height: calc(100% - 30px); display: flex; flex-direction: column; justify-content: center; align-items: center; background: #fffef2; font-size: 13px; text-align: center; pointer-events: none; }
-        #mood-dot { width: 16px; height: 16px; border-radius: 50%; background-color: #00ff00; border: 1px solid #000; margin-right: 6px; }
+        #mood-dot {
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background-color: #00ff00;
+            box-shadow: 0 0 10px #00ff00;
+            margin-right: 6px;
+            transition: background 0.2s;
+        }
 
+        /* REALTEK */
         #realtek-window { top: 25%; right: 10%; width: 300px; border-color: #000; }
         .realtek-title-bar { background: #607080; }
         #realtek-body { padding: 12px; display: flex; flex-direction: column; gap: 8px; background: #e4e2d5; }
         .eq-bars { display: flex; justify-content: center; gap: 4px; height: 36px; background: #000; padding: 4px; align-items: flex-end; border: 1px solid #000; }
-        .eq-bar { width: 8px; height: 10%; background: #00ff00; }
+        .eq-bar { width: 8px; height: 10%; background: #00ff00; transition: height 0.08s ease; }
         .realtek-controls { display: flex; justify-content: space-between; align-items: center; }
         #mute-btn { background: #d8d4c0; border: 2px solid #000; padding: 4px 12px; font-weight: bold; font-size: 12px; cursor: pointer; }
-        #mute-btn.loud-alert { background: #ff2222 !important; color: white !important; }
+        #mute-btn.loud-alert {
+            background: #ff2222 !important;
+            color: white !important;
+            animation: textPulse 0.2s infinite alternate;
+        }
 
-        #pong-window { top: 40%; left: 20px; width: 200px; border: 3px solid #0055ea; }
+        /* PONG */
+        #pong-window { top: 40%; left: 20px; width: 200px; height: 180px; box-shadow: 0 0 15px rgba(0,255,136,0.3); }
         #pong-canvas { display: block; background: #001100; }
 
+        /* TABS */
         #tab-bar-container {
             display: none;
             position: absolute;
@@ -356,7 +348,16 @@
             z-index: 999;
         }
 
-        .telefrag-cursor-shine { filter: drop-shadow(0 0 10px #00ffff) drop-shadow(0 0 20px #ffffff) !important; }
+        /* TELEFRAGGER CURSOR SHINE */
+        .telefrag-cursor-shine {
+            filter: drop-shadow(0 0 10px #00ffff) drop-shadow(0 0 20px #ffffff) !important;
+            animation: cursorJitter 0.08s infinite !important;
+        }
+        @keyframes cursorJitter {
+            0% { transform: translate(-1px, 1px); }
+            50% { transform: translate(2px, -1px); }
+            100% { transform: translate(-2px, 0px); }
+        }
     </style>
 </head>
 <body>
@@ -405,7 +406,7 @@
             </div>
         </div>
 
-        <!-- 4 PLAYER LOBBY SLOTS & MATCH MODE SELECTOR -->
+        <!-- 4 PLAYER LOBBY SLOTS -->
         <div id="room-screen">
             <div style="font-size:12px; font-weight:bold; color:#333; font-family:monospace;">ROOM CODE:</div>
             <div class="code-box" id="display-room-code">----</div>
@@ -417,38 +418,15 @@
                 <div class="player-slot empty" id="slot-3"><div class="slot-cursor-icon" id="slot-color-3"></div><span id="slot-name-3">P4: Waiting...</span></div>
             </div>
 
-            <!-- MODE SELECTOR (HOST ONLY) -->
-            <div id="mode-select-box">
-                <div style="font-size:11px; font-weight:bold; font-family:monospace;">MATCH PROGRESSION MODE:</div>
-                <div class="mode-toggle-btns">
-                    <button class="mode-btn active" id="btn-mode-chrono" onclick="selectMatchMode('chrono')">📜 CHRONOLOGICAL</button>
-                    <button class="mode-btn" id="btn-mode-custom" onclick="selectMatchMode('custom')">🛠️ CUSTOM ROSTER</button>
-                </div>
-
-                <!-- Custom Threat Panel -->
-                <div id="custom-threats-panel">
-                    <label class="threat-checkbox"><input type="checkbox" id="chk-2" checked> #2 ERR</label>
-                    <label class="threat-checkbox"><input type="checkbox" id="chk-3" checked> #3 Stalker</label>
-                    <label class="threat-checkbox"><input type="checkbox" id="chk-4" checked> #4 Rain</label>
-                    <label class="threat-checkbox"><input type="checkbox" id="chk-5" checked> #5 Reader</label>
-                    <label class="threat-checkbox"><input type="checkbox" id="chk-6" checked> #6 Tabs</label>
-                    <label class="threat-checkbox"><input type="checkbox" id="chk-7" checked> #7 Realtek</label>
-                    <label class="threat-checkbox"><input type="checkbox" id="chk-8" checked> #8 Duck</label>
-                    <label class="threat-checkbox"><input type="checkbox" id="chk-9" checked> #9 Pong</label>
-                    <label class="threat-checkbox"><input type="checkbox" id="chk-10" checked> #10 Mines</label>
-                    <label class="threat-checkbox"><input type="checkbox" id="chk-11" checked> #11 Telefrag</label>
-                </div>
-            </div>
-
             <button id="start-game-btn" class="lobby-btn btn-host" style="display:none; width:100%; margin-top:10px;" onclick="broadcastStartGame()">START GAME</button>
             <div id="waiting-msg" style="font-size:12px; color:#555; font-family:monospace; margin-top:10px;">Waiting for host to start...</div>
         </div>
     </div>
 
-    <!-- 2. GAMEPLAY AREA -->
+    <!-- 2. GAMEPLAY AREA & ALL SHARED THREATS -->
     <div id="game-container">
         <div id="mp-hud">
-            <span id="mp-mode-badge">LEVEL 1</span> | 
+            LEVEL <span id="mp-level">1</span> | 
             ALIVE: <span id="alive-count">1</span> | 
             APPLES: <span id="mp-apple-counter">0</span> / <span id="mp-apple-target">10</span>
         </div>
@@ -462,7 +440,7 @@
             <div id="task-manager-warning">TASK MGR: 5/5 TABS (NORMAL)</div>
         </div>
 
-        <!-- PONG WINDOW (L9) -->
+        <!-- PONG.EXE WINDOW (L9) -->
         <div id="pong-window" class="xp-window">
             <div class="xp-title-bar" id="pong-title-bar"><span class="xp-title">🏓 Pong.exe vs AI</span></div>
             <canvas id="pong-canvas" width="200" height="150"></canvas>
@@ -470,14 +448,14 @@
 
         <canvas id="mazeCanvas"></canvas>
 
-        <!-- ERR POPUP (L2) -->
-        <div id="hehe-popup" class="xp-window">
-            <div class="xp-title-bar"><span class="xp-title">HEHEHEHEHEHEHEHEHEHEHEHEHEHEHEHEHEHEHEHEHEHEHEHEHEHEHEHE</span></div>
+        <!-- ERR FULL WINDOW (L2) -->
+        <div id="hehe-popup" class="xp-window" style="display:none;">
+            <div class="xp-title-bar" id="err-title-bar"><span class="xp-title">HEHEHEHEHEHEHEHEHEHEHEHEHEHEHEHEHEHEHEHEHEHEHEHEHEHEHEHE</span></div>
             <div class="xp-body">
                 <div class="xp-text" id="hehe-text">REMEMBER "5"</div>
                 <div class="xp-button-row">
-                    <button class="xp-btn" onclick="sendAction('err_click')">OK</button>
-                    <button class="xp-btn" onclick="sendAction('err_click')">OK</button>
+                    <button class="xp-btn" onclick="handleLocalErrClick()">OK</button>
+                    <button class="xp-btn" onclick="handleLocalErrClick()">OK</button>
                 </div>
             </div>
         </div>
@@ -507,7 +485,7 @@
     <div id="bsod-screen">
         <h1 id="bsod-title"> *** STOP: 0x00000ERR *** </h1>
         <p id="bsod-desc">A fatal team-wipe exception has occurred.</p>
-        <p id="bsod-score" style="color:#ffff00; font-weight:bold; margin-top:15px;">ALL SQUAD MEMBERS FALLEN</p>
+        <p id="bsod-score" style="color:#ffff00; font-weight:bold; margin-top:15px;">ALL PLAYERS ELIMINATED OR HARDWARE CRITICALLY DESTROYED</p>
         <br>
         <button onclick="location.reload()" style="background:#aaa; color:#0000aa; border:none; padding:10px 20px; font-family:monospace; font-weight:bold; cursor:pointer; font-size:15px;">
             RETURN TO LOBBY
@@ -518,12 +496,9 @@
 
     <script>
         // ====================================================
-        //       ALL CORE STATE VARIABLES (INITIALIZED FIRST)
+        //       ALL CORE THREAT STATES & PROPERTIES
         // ====================================================
         let currentLevel = 1;
-        let matchMode = 'chrono'; // 'chrono' or 'custom'
-        let customRoster = { 2:1, 3:1, 4:1, 5:1, 6:1, 7:1, 8:1, 9:1, 10:1, 11:1 };
-
         let totalApples = 10;
         let applesCollected = 0;
         let gameActive = false;
@@ -533,12 +508,12 @@
         let nextMyDir = { x: 1, y: 0 };
         let apples = [];
 
-        // Threat States (All safely declared)
+        // Threat variables
         let bucket = { x: window.innerWidth / 2 - 45, y: window.innerHeight - 40, width: 90, height: 26, isDragging: false, dragOffsetX: 0 };
         let rainDrop = null, rainCooldown = false;
         let stalker = { active: false, x: 0, y: 0, size: 26, speed: 1.3 };
         let duck = { active: false, x: -40, y: 200, size: 28, speedX: 2.8, wave: 0 };
-        let escapedDucks = 0;
+        let escapedDucks = 0, duckSpawnTimeout = null;
         let pong = { active: false, ballX: 100, ballY: 75, ballVx: 2.3, ballVy: 1.4, playerY: 55, aiY: 55, paddleH: 36, paddleW: 8, isDraggingPaddle: false, dragOffsetY: 0 };
         let mines = [];
         let telefragger = { active: false, phase: 'idle', targetId: '', targetX: 0, targetY: 0, x: 0, y: 0, size: 38 };
@@ -547,7 +522,18 @@
         const TARGET_TABS = 5;
         let activeTabs = ["snake.html", "realtek_hd", "duck_hunt", "coolmath", "subway.mp4"];
 
-        // PeerJS Networking
+        // FULL ERR RECOVERY STATE
+        let errState = {
+            active: false,
+            phase: 'idle', // 'memorize', 'counting', 'panic'
+            target: 0,
+            count: 0,
+            isDown: false,
+            countingInterval: null,
+            panicTimeout: null
+        };
+
+        // PeerJS Networking Variables
         let peer = null;
         let connections = [];
         let hostConn = null;
@@ -557,7 +543,7 @@
         let myColor = '#ffffff';
         let players = {};
 
-        // Canvas Setup
+        // Canvas & Setup
         const canvas = document.getElementById('mazeCanvas');
         const ctx = canvas.getContext('2d');
         const topCanvas = document.getElementById('topCanvas');
@@ -661,16 +647,7 @@
             localStorage.setItem('snake_mp_name', myUsername);
         }
 
-        // LOBBY MODE SELECTOR (CHRONO VS CUSTOM)
-        function selectMatchMode(mode) {
-            if (!isHost) return;
-            matchMode = mode;
-            document.getElementById('btn-mode-chrono').classList.toggle('active', mode === 'chrono');
-            document.getElementById('btn-mode-custom').classList.toggle('active', mode === 'custom');
-            document.getElementById('custom-threats-panel').style.display = mode === 'custom' ? 'grid' : 'none';
-        }
-
-        // --- HOST ROOM ---
+        // --- NETWORKING: HOST ROOM ---
         function hostRoom() {
             saveProfile();
             isHost = true;
@@ -708,7 +685,7 @@
             });
         }
 
-        // --- JOIN ROOM ---
+        // --- NETWORKING: JOIN ROOM ---
         function joinRoom() {
             saveProfile();
             const inputCode = document.getElementById('room-input').value.trim();
@@ -723,8 +700,6 @@
 
                 hostConn.on('open', () => {
                     showRoomScreen(inputCode);
-                    // Disable host controls on client
-                    document.getElementById('mode-select-box').style.pointerEvents = 'none';
                     hostConn.send({ type: 'join_handshake', name: myUsername, color: myColor });
                 });
                 hostConn.on('data', data => handleNetworkData(data, hostConn));
@@ -784,8 +759,6 @@
                 updateLobbySlots();
             } else if (data.type === 'start_game') {
                 currentLevel = data.level;
-                matchMode = data.matchMode;
-                customRoster = data.customRoster;
                 totalApples = data.totalApples;
                 apples = data.apples;
                 initMultiplayerGame();
@@ -815,26 +788,15 @@
             }
         }
 
-        // START GAME BUTTON (HOST ONLY)
         function broadcastStartGame() {
             const pCount = Math.max(1, Object.keys(players).length);
             totalApples = pCount * 10;
             currentLevel = 1;
             spawnApplesMultiplayer(totalApples);
 
-            // Read Custom Roster checkboxes if in custom mode
-            if (matchMode === 'custom') {
-                for (let i = 2; i <= 11; i++) {
-                    const chk = document.getElementById(`chk-${i}`);
-                    customRoster[i] = chk && chk.checked ? 1 : 0;
-                }
-            }
-
             const startPayload = {
                 type: 'start_game',
                 level: 1,
-                matchMode: matchMode,
-                customRoster: customRoster,
                 totalApples: totalApples,
                 apples: apples
             };
@@ -876,47 +838,167 @@
             document.getElementById('alive-count').innerText = aliveTotal;
             document.getElementById('mp-apple-counter').innerText = applesCollected;
             document.getElementById('mp-apple-target').innerText = totalApples;
-            document.getElementById('mp-mode-badge').innerText = matchMode === 'chrono' ? `LEVEL ${currentLevel}` : `CUSTOM ROSTER`;
+            document.getElementById('mp-level').innerText = currentLevel;
         }
 
         // ====================================================
-        //       THREAT SETUP & HIDING LOGIC (STRICT ON L1)
+        //       SHARED THREAT CONTROLLERS & LEVEL SETUPS
         // ====================================================
-        function isThreatActive(threatId, unlockLevel) {
-            if (matchMode === 'custom') return customRoster[threatId] === 1;
-            return currentLevel >= unlockLevel;
-        }
-
         function setupMultiplayerLevel(lvl) {
             currentLevel = lvl;
-
-            // 1. Reset all threat visibility
-            document.getElementById('hehe-popup').style.display = 'none';
-            document.getElementById('book-window').style.display = isThreatActive(5, 5) ? 'block' : 'none';
-            document.getElementById('tab-bar-container').style.display = isThreatActive(6, 6) ? 'flex' : 'none';
-            document.getElementById('realtek-window').style.display = isThreatActive(7, 7) ? 'block' : 'none';
-            document.getElementById('duck-hud').style.display = isThreatActive(8, 8) ? 'block' : 'none';
-            document.getElementById('pong-window').style.display = isThreatActive(9, 9) ? 'block' : 'none';
-
-            pong.active = isThreatActive(9, 9);
-
-            // 2. Host starts active threat loops
             if (isHost) {
-                if (isThreatActive(2, 2)) scheduleHostErr();
-                if (isThreatActive(3, 3)) setTimeout(spawnHostStalker, 2000);
-                if (isThreatActive(5, 5)) hostStartReader();
-                if (isThreatActive(6, 6)) hostStartTabs();
-                if (isThreatActive(7, 7)) hostStartRealtek();
-                if (isThreatActive(8, 8)) hostStartDuck();
-                if (isThreatActive(9, 9)) hostStartPong();
-                if (isThreatActive(10, 10)) hostStartMines();
-                if (isThreatActive(11, 11)) hostStartTelefragger();
+                if (lvl >= 2) scheduleHostErr();
+                if (lvl >= 3) setTimeout(spawnHostStalker, 2000);
+                if (lvl >= 5) hostStartReader();
+                if (lvl >= 6) hostStartTabs();
+                if (lvl >= 7) hostStartRealtek();
+                if (lvl >= 8) hostStartDuck();
+                if (lvl >= 9) hostStartPong();
+                if (lvl >= 10) hostStartMines();
+                if (lvl >= 11) hostStartTelefragger();
+            }
+
+            if (lvl >= 5) document.getElementById('book-window').style.display = 'block';
+            if (lvl >= 6) document.getElementById('tab-bar-container').style.display = 'flex';
+            if (lvl >= 7) document.getElementById('realtek-window').style.display = 'block';
+            if (lvl >= 8) document.getElementById('duck-hud').style.display = 'block';
+            if (lvl >= 9) { document.getElementById('pong-window').style.display = 'block'; pong.active = true; }
+        }
+
+        // --- FULL ERR ENGINE (RESTORED COUNTDOWN & PANIC) ---
+        function scheduleHostErr() {
+            if (!gameActive || currentLevel < 2) return;
+            const delay = Math.random() * 4000 + 4500;
+            setTimeout(() => {
+                if (gameActive && currentLevel >= 2) launchHostErr();
+            }, delay);
+        }
+
+        function launchHostErr() {
+            const isDown = Math.random() > 0.5;
+            let target, startCount;
+
+            if (isDown) {
+                target = Math.floor(Math.random() * 4) + 2;
+                startCount = target + Math.floor(Math.random() * 4) + 3;
+            } else {
+                target = Math.floor(Math.random() * 5) + 3;
+                startCount = 1;
+            }
+
+            sendAction('err_memorize', { target: target, startCount: startCount, isDown: isDown });
+
+            // 1.8s to memorize, then start ticking
+            setTimeout(() => {
+                if (!gameActive || !errState.active) return;
+                sendAction('err_start_counting');
+            }, 1800);
+        }
+
+        function handleLocalErrClick() {
+            // Player clicks OK button locally
+            if (errState.phase === 'panic') {
+                sendAction('err_pacified');
+            } else if (errState.phase === 'counting') {
+                if (isHost) triggerHostTeamWipe("ERR_PREMATURE_CLICK", "OK was clicked before count finished.");
+                else sendAction('err_failed_click');
             }
         }
 
+        // Threat Action Dispatcher
         function applyThreatAction(data) {
             const act = data.action;
-            if (act === 'stalker_swat') {
+
+            // ERR ACTIONS
+            if (act === 'err_memorize') {
+                errState.active = true;
+                errState.phase = 'memorize';
+                errState.target = data.target;
+                errState.count = data.startCount;
+                errState.isDown = data.isDown;
+
+                const popup = document.getElementById('hehe-popup');
+                popup.className = "xp-window";
+                if (data.isDown) popup.classList.add('err-countdown');
+                document.getElementById('hehe-text').innerText = `REMEMBER "${data.target}"`;
+                popup.style.display = 'block';
+                playBeep(220, 0.3, 'square');
+            }
+            else if (act === 'err_start_counting') {
+                errState.phase = 'counting';
+                const popup = document.getElementById('hehe-popup');
+
+                if (errState.countingInterval) clearInterval(errState.countingInterval);
+                errState.countingInterval = setInterval(() => {
+                    if (errState.isDown) errState.count--;
+                    else errState.count++;
+
+                    document.getElementById('hehe-text').innerText = `COUNT: ${errState.count}`;
+                    playBeep(errState.isDown ? 280 : 350, 0.08);
+
+                    // HIT TARGET: ENTER 1-SECOND PANIC WINDOW!
+                    if (errState.count === errState.target) {
+                        clearInterval(errState.countingInterval);
+                        errState.phase = 'panic';
+
+                        popup.classList.remove('err-countdown');
+                        popup.classList.add('err-panic');
+                        document.getElementById('hehe-text').innerText = `CLICK OK: "${errState.target}"!`;
+                        playBeep(500, 0.2, 'sawtooth');
+
+                        // 1-Second Panic timer
+                        if (isHost) {
+                            errState.panicTimeout = setTimeout(() => {
+                                if (errState.phase === 'panic' && gameActive) {
+                                    sendAction('err_meltdown');
+                                }
+                            }, 1000);
+                        }
+                    }
+                }, 750);
+            }
+            else if (act === 'err_pacified') {
+                errState.active = false;
+                errState.phase = 'idle';
+                if (errState.countingInterval) clearInterval(errState.countingInterval);
+                if (errState.panicTimeout) clearTimeout(errState.panicTimeout);
+
+                const popup = document.getElementById('hehe-popup');
+                popup.style.display = 'none';
+                popup.className = "xp-window";
+                playBeep(650, 0.2);
+
+                if (isHost) scheduleHostErr();
+            }
+            else if (act === 'err_failed_click') {
+                if (isHost) triggerHostTeamWipe("ERR_PREMATURE_CLICK", "OK was clicked before count finished.");
+            }
+            else if (act === 'err_meltdown') {
+                // VIOLENT SHAKE & WATERFALL CASCADE ON ALL SCREENS!
+                gameActive = false;
+                playGlitchScreech();
+                const popup = document.getElementById('hehe-popup');
+                popup.classList.add('shake-crazy');
+
+                let cloneCount = 0;
+                const cascadeInterval = setInterval(() => {
+                    const clone = popup.cloneNode(true);
+                    clone.classList.add('shake-crazy');
+                    clone.style.top = `${15 + cloneCount * 4}%`;
+                    clone.style.left = `${20 + cloneCount * 4}%`;
+                    document.getElementById('game-container').appendChild(clone);
+                    playBeep(150 + cloneCount * 50, 0.08, 'sawtooth');
+
+                    cloneCount++;
+                    if (cloneCount > 10) {
+                        clearInterval(cascadeInterval);
+                        setTimeout(() => triggerTeamBSOD("ERR_CASCADE_OVERFLOW", "Squad failed to click OK within 1 second. System incinerated."), 600);
+                    }
+                }, 70);
+            }
+
+            // OTHER SHARED ACTIONS
+            else if (act === 'stalker_swat') {
                 stalker.active = false;
                 playBeep(750, 0.15, 'sawtooth');
             } else if (act === 'bucket_move') {
@@ -926,6 +1008,7 @@
             } else if (act === 'reader_pacify') {
                 moodState = 'green';
                 document.getElementById('mood-dot').style.backgroundColor = '#00ff00';
+                document.getElementById('mood-dot').style.boxShadow = '0 0 10px #00ff00';
                 document.getElementById('book-mood-status').innerText = "STATUS: HAPPY";
                 document.getElementById('book-mood-status').style.color = "#008820";
                 playBeep(650, 0.08);
@@ -948,28 +1031,11 @@
             } else if (act === 'tab_add') {
                 activeTabs.push("tab_" + activeTabs.length);
                 renderTabs();
-            } else if (act === 'err_click') {
-                document.getElementById('hehe-popup').style.display = 'none';
-                playBeep(650, 0.2);
             }
         }
 
-        function scheduleHostErr() {
-            if (!gameActive || !isThreatActive(2, 2)) return;
-            setTimeout(() => {
-                if (gameActive && isThreatActive(2, 2)) {
-                    const target = Math.floor(Math.random() * 4) + 3;
-                    sendAction('err_show', { target: target });
-                    document.getElementById('hehe-text').innerText = `CLICK OK: "${target}"!`;
-                    document.getElementById('hehe-popup').style.display = 'block';
-                    playBeep(500, 0.2, 'sawtooth');
-                    scheduleHostErr();
-                }
-            }, Math.random() * 6000 + 7000);
-        }
-
         function spawnHostStalker() {
-            if (!gameActive || !isThreatActive(3, 3)) return;
+            if (!gameActive || currentLevel < 3) return;
             stalker.active = true;
             stalker.x = Math.random() > 0.5 ? -20 : canvas.width + 20;
             stalker.y = Math.random() * canvas.height;
@@ -977,9 +1043,10 @@
 
         function hostStartReader() {
             setInterval(() => {
-                if (!gameActive || !isThreatActive(5, 5) || moodState === 'red') return;
+                if (!gameActive || currentLevel < 5 || moodState === 'red') return;
                 moodState = 'red';
                 document.getElementById('mood-dot').style.backgroundColor = '#ff0000';
+                document.getElementById('mood-dot').style.boxShadow = '0 0 14px #ff0000';
                 document.getElementById('book-mood-status').innerText = "STATUS: ENRAGED!! CLICK NOW!!";
                 document.getElementById('book-mood-status').style.color = "#ff0000";
                 playBeep(240, 0.2, 'sawtooth');
@@ -989,13 +1056,13 @@
                         triggerHostTeamWipe("READER_NEGLECT_FATAL", "The Reader's rage consumed the desktop.");
                     }
                 }, 2200);
-            }, 7000);
+            }, 6000);
         }
 
         function hostStartTabs() {
             renderTabs();
             setInterval(() => {
-                if (!gameActive || !isThreatActive(6, 6)) return;
+                if (!gameActive || currentLevel < 6) return;
                 if (Math.random() > 0.5) activeTabs.push("popup_tab");
                 else if (activeTabs.length > 1) activeTabs.pop();
                 renderTabs();
@@ -1012,7 +1079,7 @@
 
         function hostStartRealtek() {
             setInterval(() => {
-                if (!gameActive || !isThreatActive(7, 7) || isAudioLoud) return;
+                if (!gameActive || currentLevel < 7 || isAudioLoud) return;
                 isAudioLoud = true;
                 updateRealtekUI(true);
                 startLoudAudioSound();
@@ -1021,14 +1088,15 @@
                     if (isAudioLoud && gameActive) {
                         moodState = 'red';
                         document.getElementById('mood-dot').style.backgroundColor = '#ff0000';
+                        document.getElementById('mood-dot').style.boxShadow = '0 0 14px #ff0000';
                     }
                 }, 2600);
-            }, 8500);
+            }, 8000);
         }
 
         function hostStartDuck() {
             setInterval(() => {
-                if (!gameActive || !isThreatActive(8, 8) || duck.active) return;
+                if (!gameActive || currentLevel < 8 || duck.active) return;
                 duck.active = true;
                 duck.x = -40;
                 duck.y = Math.random() * (canvas.height - 240) + 90;
@@ -1046,14 +1114,14 @@
 
         function hostStartMines() {
             setInterval(() => {
-                if (!gameActive || !isThreatActive(10, 10)) return;
+                if (!gameActive || currentLevel < 10) return;
                 mines.push({ x: Math.floor(Math.random() * (cols - 4)) + 2, y: Math.floor(Math.random() * (rows - 4)) + 2, flagged: false });
             }, 5000);
         }
 
         function hostStartTelefragger() {
             setInterval(() => {
-                if (!gameActive || !isThreatActive(11, 11) || telefragger.active) return;
+                if (!gameActive || currentLevel < 11 || telefragger.active) return;
                 const living = Object.keys(players).filter(id => players[id].alive);
                 if (living.length === 0) return;
 
@@ -1081,7 +1149,7 @@
 
                     setTimeout(() => { telefragger.active = false; }, 2500);
                 }, 1200);
-            }, 8500);
+            }, 8000);
         }
 
         function triggerHostTeamWipe(code, desc) {
@@ -1100,7 +1168,7 @@
         }
 
         // ====================================================
-        //       LOCAL CONTROLS & INTERACTION
+        //       LOCAL PLAYER CONTROLS & SPECTATING
         // ====================================================
         window.addEventListener('keydown', e => {
             if (!isAlive) return;
@@ -1110,7 +1178,7 @@
             if ((key === 'a' || key === 'arrowleft') && myDir.x === 0) nextMyDir = { x: -1, y: 0 };
             if ((key === 'd' || key === 'arrowright') && myDir.x === 0) nextMyDir = { x: 1, y: 0 };
 
-            if (isThreatActive(4, 4)) {
+            if (currentLevel >= 4) {
                 if (key === 'q') { bucket.x = Math.max(0, bucket.x - 30); sendAction('bucket_move', { x: bucket.x }); }
                 if (key === 'e') { bucket.x = Math.min(canvas.width - bucket.width, bucket.x + 30); sendAction('bucket_move', { x: bucket.x }); }
             }
@@ -1138,7 +1206,6 @@
         window.addEventListener('mousedown', e => {
             const mx = e.clientX, my = e.clientY;
 
-            // Minesweeper Click
             for (let i = 0; i < mines.length; i++) {
                 const m = mines[i];
                 if (!m.flagged && mx >= m.x * GRID_SIZE && mx <= m.x * GRID_SIZE + GRID_SIZE && my >= m.y * GRID_SIZE && my <= m.y * GRID_SIZE + GRID_SIZE) {
@@ -1147,20 +1214,17 @@
                 }
             }
 
-            // Duck Shot
             if (duck.active) {
                 const dx = mx - (duck.x + duck.size / 2), dy = my - (duck.y + duck.size / 2);
                 if (Math.sqrt(dx * dx + dy * dy) < 38) { sendAction('duck_shot'); return; }
             }
 
-            // Bucket Drag
-            if (isThreatActive(4, 4) && mx >= bucket.x && mx <= bucket.x + bucket.width && my >= bucket.y && my <= bucket.y + bucket.height) {
+            if (currentLevel >= 4 && mx >= bucket.x && mx <= bucket.x + bucket.width && my >= bucket.y && my <= bucket.y + bucket.height) {
                 bucket.isDragging = true;
                 bucket.dragOffsetX = mx - bucket.x;
                 return;
             }
 
-            // Pong Paddle Drag
             if (pong.active) {
                 const rect = document.getElementById('pong-window').getBoundingClientRect();
                 const rx = mx - rect.left, ry = my - rect.top - 24;
@@ -1171,7 +1235,6 @@
                 }
             }
 
-            // Swat Stalker
             if (stalker.active) {
                 const dx = mx - (stalker.x + stalker.size / 2), dy = my - (stalker.y + stalker.size / 2);
                 if (Math.sqrt(dx * dx + dy * dy) < 42) { sendAction('stalker_swat'); return; }
@@ -1205,7 +1268,7 @@
         }
 
         // ====================================================
-        //       GAME ENGINE LOOP & RENDERING
+        //       GAME ENGINE LOOP & JUICY RENDERING
         // ====================================================
         let lastSnakeTick = 0;
         const tickRate = 110;
@@ -1220,8 +1283,7 @@
             if (newHead.y < 0) newHead.y = rows - 1;
             if (newHead.y >= rows) newHead.y = 0;
 
-            // Minesweeper
-            if (isThreatActive(10, 10)) {
+            if (currentLevel >= 10) {
                 for (let m of mines) {
                     if (!m.flagged && m.x === newHead.x && m.y === newHead.y) {
                         playMineExplosion();
@@ -1231,13 +1293,11 @@
                 }
             }
 
-            // Stalker
-            if (stalker.active && isThreatActive(3, 3)) {
+            if (stalker.active && currentLevel >= 3) {
                 const dist = Math.sqrt(Math.pow(stalker.x - (newHead.x * GRID_SIZE), 2) + Math.pow(stalker.y - (newHead.y * GRID_SIZE), 2));
                 if (dist < 24) { handleLocalPlayerDeath("STALKER"); return; }
             }
 
-            // Apples
             apples.forEach(apple => {
                 if (!apple.collected && apple.x === newHead.x && apple.y === newHead.y) {
                     apple.collected = true;
@@ -1250,16 +1310,11 @@
 
                     if (applesCollected >= totalApples) {
                         if (isHost) {
-                            if (matchMode === 'chrono') {
-                                const nextLvl = currentLevel + 1;
-                                spawnApplesMultiplayer(totalApples);
-                                const advPayload = { type: 'level_advance', level: nextLvl, totalApples: totalApples, apples: apples };
-                                broadcast(advPayload);
-                                triggerLevelAdvance(nextLvl, totalApples, apples);
-                            } else {
-                                alert("🏆 CUSTOM ROSTER CLEARED! SQUAD VICTORY!");
-                                location.reload();
-                            }
+                            const nextLvl = currentLevel + 1;
+                            spawnApplesMultiplayer(totalApples);
+                            const advPayload = { type: 'level_advance', level: nextLvl, totalApples: totalApples, apples: apples };
+                            broadcast(advPayload);
+                            triggerLevelAdvance(nextLvl, totalApples, apples);
                         }
                     }
                 }
@@ -1286,7 +1341,6 @@
             applesCollected = 0;
             updateHud();
 
-            // Revive all dead players for next level!
             isAlive = true;
             document.getElementById('spectate-banner').style.display = 'none';
             Object.values(players).forEach(p => p.alive = true);
@@ -1312,7 +1366,7 @@
                 }
             }
 
-            if (isThreatActive(4, 4)) {
+            if (currentLevel >= 4) {
                 if (rainDrop === null && !rainCooldown) {
                     rainDrop = { x: Math.random() * (canvas.width - 80) + 40, y: -10, speed: 3.4 };
                 }
@@ -1366,32 +1420,49 @@
             }
         }
 
+        // --- FULL JUICY CANVAS RENDERING ---
         function drawMultiplayer() {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-            // Apples
+            // 1. Apples
             ctx.fillStyle = "#a82020";
             apples.forEach(a => { if (!a.collected) ctx.fillRect(a.x * GRID_SIZE + 2, a.y * GRID_SIZE + 2, GRID_SIZE - 4, GRID_SIZE - 4); });
 
-            // Mines
-            if (isThreatActive(10, 10)) {
+            // 2. Minesweeper Mines (Level 10)
+            if (currentLevel >= 10) {
                 mines.forEach(m => {
                     const px = m.x * GRID_SIZE, py = m.y * GRID_SIZE;
                     ctx.fillStyle = "#c0c0c0";
                     ctx.fillRect(px + 2, py + 2, GRID_SIZE - 4, GRID_SIZE - 4);
+                    ctx.strokeStyle = "#808080";
+                    ctx.strokeRect(px + 2, py + 2, GRID_SIZE - 4, GRID_SIZE - 4);
+
                     if (m.flagged) {
                         ctx.fillStyle = "#ff0000";
-                        ctx.fillRect(px + 10, py + 8, 14, 12);
+                        ctx.beginPath();
+                        ctx.moveTo(px + 10, py + 8);
+                        ctx.lineTo(px + 24, py + 14);
+                        ctx.lineTo(px + 10, py + 20);
+                        ctx.fill();
+                        ctx.strokeStyle = "#000";
+                        ctx.lineWidth = 2;
+                        ctx.beginPath();
+                        ctx.moveTo(px + 10, py + 8);
+                        ctx.lineTo(px + 10, py + 28);
+                        ctx.stroke();
+                        ctx.lineWidth = 1;
                     } else {
-                        ctx.fillStyle = "#000000";
+                        ctx.fillStyle = "#111111";
                         ctx.beginPath();
                         ctx.arc(px + GRID_SIZE / 2, py + GRID_SIZE / 2, 8, 0, Math.PI * 2);
                         ctx.fill();
+                        ctx.fillRect(px + GRID_SIZE / 2 - 2, py + 4, 4, GRID_SIZE - 8);
+                        ctx.fillRect(px + 4, py + GRID_SIZE / 2 - 2, GRID_SIZE - 8, 4);
                     }
                 });
             }
 
-            // Snakes
+            // 3. Snakes
             Object.entries(players).forEach(([pid, p]) => {
                 if (!p.alive || !p.snake) return;
                 p.snake.forEach((seg, i) => {
@@ -1400,8 +1471,8 @@
                 });
             });
 
-            // Darkness Fog (Illuminates around my snake head)
-            if (isAlive && mySnake.length > 0) {
+            // 4. Darkness Fog
+            if (currentLevel > 0 && isAlive) {
                 const headX = mySnake[0].x * GRID_SIZE + (GRID_SIZE / 2);
                 const headY = mySnake[0].y * GRID_SIZE + (GRID_SIZE / 2);
                 let gradient = ctx.createRadialGradient(headX, headY, 20, headX, headY, 240);
@@ -1412,31 +1483,59 @@
                 ctx.fillRect(0, 0, canvas.width, canvas.height);
             }
 
-            // Top Canvas (Threats & Cursors)
+            // --- TOP CANVAS: THREATS WITH VIBRANT GLOWS ---
             tCtx.clearRect(0, 0, topCanvas.width, topCanvas.height);
 
+            // Stalker with Yellow Halo
             if (stalker.active) {
                 tCtx.fillStyle = "#ffff00";
+                tCtx.shadowColor = "#ffff00";
+                tCtx.shadowBlur = 18;
                 tCtx.fillRect(stalker.x, stalker.y, stalker.size, stalker.size);
+                tCtx.shadowBlur = 0;
             }
 
-            if (isThreatActive(4, 4)) {
+            // Bucket & Cyan Glowing Raindrop
+            if (currentLevel >= 4) {
                 tCtx.fillStyle = bucket.isDragging ? "#ffffff" : "#a0a0a0";
                 tCtx.fillRect(bucket.x, bucket.y, bucket.width, bucket.height);
+                tCtx.fillStyle = "#222222";
+                tCtx.fillRect(bucket.x + 4, bucket.y + 4, bucket.width - 8, bucket.height - 8);
+                tCtx.fillStyle = "#3fa9f5";
+                tCtx.fillRect(bucket.x + 6, bucket.y + 12, bucket.width - 12, bucket.height - 14);
+
                 if (rainDrop) {
                     tCtx.fillStyle = "#00d4ff";
+                    tCtx.shadowColor = "#00d4ff";
+                    tCtx.shadowBlur = 10;
                     tCtx.fillRect(rainDrop.x, rainDrop.y, 10, 18);
+                    tCtx.shadowBlur = 0;
                 }
             }
 
+            // Duck
             if (duck.active) {
                 tCtx.fillStyle = "#d87d22";
                 tCtx.fillRect(duck.x, duck.y, duck.size, duck.size - 8);
+                tCtx.fillStyle = "#00ff88";
+                tCtx.fillRect(duck.x + duck.size - 6, duck.y - 6, 12, 12);
+                tCtx.fillStyle = "#ffff00";
+                tCtx.fillRect(duck.x + duck.size + 6, duck.y - 2, 8, 5);
+                tCtx.fillStyle = "#ffffff";
+                const wingBob = Math.sin(duck.wave * 2) * 6;
+                tCtx.fillRect(duck.x + 6, duck.y - 4 + wingBob, 12, 8);
             }
 
+            // Telefragger with Cyan Glitch Void Aura
             if (telefragger.active) {
                 tCtx.fillStyle = "#00ffff";
+                tCtx.shadowColor = "#00ffff";
+                tCtx.shadowBlur = 25;
                 tCtx.fillRect(telefragger.x, telefragger.y, telefragger.size, telefragger.size);
+                tCtx.fillStyle = "#000000";
+                tCtx.fillRect(telefragger.x + 8, telefragger.y + 10, 6, 8);
+                tCtx.fillRect(telefragger.x + 22, telefragger.y + 10, 6, 8);
+                tCtx.shadowBlur = 0;
             }
 
             // Peer Cursors
