@@ -20,7 +20,7 @@
             user-select: none;
         }
 
-        /* 1. RETRO LOBBY (NEWGROUNDS / XP AESTHETIC) */
+        /* 1. LOBBY CONTAINER (RETRO XP STYLE) */
         #lobby-container {
             position: absolute;
             top: 50%;
@@ -157,6 +157,7 @@
             border: 2px solid #fff;
         }
 
+        /* STRICTLY HIDDEN BY DEFAULT */
         #duck-hud {
             display: none;
             position: absolute;
@@ -212,8 +213,9 @@
             z-index: 2000;
         }
 
-        /* 3. WINDOWS XP DIALOGS & ANIMATED STATES */
+        /* 3. WINDOWS XP DIALOGS (ALL STRICTLY HIDDEN BY DEFAULT!) */
         .xp-window {
+            display: none; /* STRICTLY HIDDEN AT START! */
             position: absolute;
             background: #ece9d8;
             border-radius: 8px 8px 0 0;
@@ -241,7 +243,7 @@
         .xp-button-row { display: flex; justify-content: center; gap: 15px; }
         .xp-btn { min-width: 75px; padding: 4px 14px; font-size: 12px; font-family: "Tahoma", sans-serif; background: #ece9d8; border: 1px solid #003c74; border-radius: 3px; box-shadow: inset 0 0 0 1px #fff; cursor: pointer; }
 
-        /* ERR FULL STATES RESTORED */
+        /* ERR WINDOW */
         #hehe-popup { top: 45%; left: 50%; transform: translate(-50%, -50%); width: 440px; }
         .err-countdown .xp-title-bar { background: linear-gradient(180deg, #008a20 0%, #2ecc71 40%, #008a20 100%) !important; }
         .err-countdown .xp-text { color: #007718 !important; }
@@ -259,11 +261,9 @@
 
         .shake-crazy { animation: violentShake 0.05s infinite; }
         @keyframes violentShake {
-            0% { transform: translate(-50%, -50%) translate(-8px, 6px); }
-            25% { transform: translate(-50%, -50%) translate(10px, -8px); }
-            50% { transform: translate(-50%, -50%) translate(-12px, -5px); }
-            75% { transform: translate(-50%, -50%) translate(8px, 10px); }
-            100% { transform: translate(-50%, -50%) translate(-6px, -10px); }
+            0% { transform: translate(-50%, -50%) translate(-6px, 4px); }
+            50% { transform: translate(-50%, -50%) translate(6px, -4px); }
+            100% { transform: translate(-50%, -50%) translate(-4px, -6px); }
         }
 
         /* READER */
@@ -348,7 +348,6 @@
             z-index: 999;
         }
 
-        /* TELEFRAGGER CURSOR SHINE */
         .telefrag-cursor-shine {
             filter: drop-shadow(0 0 10px #00ffff) drop-shadow(0 0 20px #ffffff) !important;
             animation: cursorJitter 0.08s infinite !important;
@@ -449,7 +448,7 @@
         <canvas id="mazeCanvas"></canvas>
 
         <!-- ERR FULL WINDOW (L2) -->
-        <div id="hehe-popup" class="xp-window" style="display:none;">
+        <div id="hehe-popup" class="xp-window">
             <div class="xp-title-bar" id="err-title-bar"><span class="xp-title">HEHEHEHEHEHEHEHEHEHEHEHEHEHEHEHEHEHEHEHEHEHEHEHEHEHEHEHE</span></div>
             <div class="xp-body">
                 <div class="xp-text" id="hehe-text">REMEMBER "5"</div>
@@ -525,7 +524,7 @@
         // FULL ERR RECOVERY STATE
         let errState = {
             active: false,
-            phase: 'idle', // 'memorize', 'counting', 'panic'
+            phase: 'idle',
             target: 0,
             count: 0,
             isDown: false,
@@ -647,7 +646,7 @@
             localStorage.setItem('snake_mp_name', myUsername);
         }
 
-        // --- NETWORKING: HOST ROOM ---
+        // --- NETWORKING ---
         function hostRoom() {
             saveProfile();
             isHost = true;
@@ -685,7 +684,6 @@
             });
         }
 
-        // --- NETWORKING: JOIN ROOM ---
         function joinRoom() {
             saveProfile();
             const inputCode = document.getElementById('room-input').value.trim();
@@ -842,10 +840,37 @@
         }
 
         // ====================================================
-        //       SHARED THREAT CONTROLLERS & LEVEL SETUPS
+        //       LEVEL PROGRESSION & STRICT HIDING FIX
         // ====================================================
         function setupMultiplayerLevel(lvl) {
             currentLevel = lvl;
+
+            // 1. FIRST: HIDE ALL WINDOWS EXPLICITLY SO NOTHING LEAKS!
+            document.getElementById('hehe-popup').style.display = 'none';
+            document.getElementById('book-window').style.display = 'none';
+            document.getElementById('realtek-window').style.display = 'none';
+            document.getElementById('tab-bar-container').style.display = 'none';
+            document.getElementById('duck-hud').style.display = 'none';
+            document.getElementById('dog-popup').style.display = 'none';
+            document.getElementById('pong-window').style.display = 'none';
+
+            pong.active = false;
+            stalker.active = false;
+            duck.active = false;
+            telefragger.active = false;
+            if (rainDrop) rainDrop = null;
+
+            // 2. REVEAL ONLY WHAT CURRENT LEVEL UNLOCKS:
+            if (lvl >= 5) document.getElementById('book-window').style.display = 'block';
+            if (lvl >= 6) document.getElementById('tab-bar-container').style.display = 'flex';
+            if (lvl >= 7) document.getElementById('realtek-window').style.display = 'block';
+            if (lvl >= 8) document.getElementById('duck-hud').style.display = 'block';
+            if (lvl >= 9) {
+                document.getElementById('pong-window').style.display = 'block';
+                pong.active = true;
+            }
+
+            // 3. HOST DISPATCHERS
             if (isHost) {
                 if (lvl >= 2) scheduleHostErr();
                 if (lvl >= 3) setTimeout(spawnHostStalker, 2000);
@@ -857,15 +882,9 @@
                 if (lvl >= 10) hostStartMines();
                 if (lvl >= 11) hostStartTelefragger();
             }
-
-            if (lvl >= 5) document.getElementById('book-window').style.display = 'block';
-            if (lvl >= 6) document.getElementById('tab-bar-container').style.display = 'flex';
-            if (lvl >= 7) document.getElementById('realtek-window').style.display = 'block';
-            if (lvl >= 8) document.getElementById('duck-hud').style.display = 'block';
-            if (lvl >= 9) { document.getElementById('pong-window').style.display = 'block'; pong.active = true; }
         }
 
-        // --- FULL ERR ENGINE (RESTORED COUNTDOWN & PANIC) ---
+        // --- FULL ERR ENGINE RESTORED ---
         function scheduleHostErr() {
             if (!gameActive || currentLevel < 2) return;
             const delay = Math.random() * 4000 + 4500;
@@ -888,7 +907,6 @@
 
             sendAction('err_memorize', { target: target, startCount: startCount, isDown: isDown });
 
-            // 1.8s to memorize, then start ticking
             setTimeout(() => {
                 if (!gameActive || !errState.active) return;
                 sendAction('err_start_counting');
@@ -896,7 +914,6 @@
         }
 
         function handleLocalErrClick() {
-            // Player clicks OK button locally
             if (errState.phase === 'panic') {
                 sendAction('err_pacified');
             } else if (errState.phase === 'counting') {
@@ -905,11 +922,9 @@
             }
         }
 
-        // Threat Action Dispatcher
         function applyThreatAction(data) {
             const act = data.action;
 
-            // ERR ACTIONS
             if (act === 'err_memorize') {
                 errState.active = true;
                 errState.phase = 'memorize';
@@ -936,7 +951,6 @@
                     document.getElementById('hehe-text').innerText = `COUNT: ${errState.count}`;
                     playBeep(errState.isDown ? 280 : 350, 0.08);
 
-                    // HIT TARGET: ENTER 1-SECOND PANIC WINDOW!
                     if (errState.count === errState.target) {
                         clearInterval(errState.countingInterval);
                         errState.phase = 'panic';
@@ -946,7 +960,6 @@
                         document.getElementById('hehe-text').innerText = `CLICK OK: "${errState.target}"!`;
                         playBeep(500, 0.2, 'sawtooth');
 
-                        // 1-Second Panic timer
                         if (isHost) {
                             errState.panicTimeout = setTimeout(() => {
                                 if (errState.phase === 'panic' && gameActive) {
@@ -974,7 +987,6 @@
                 if (isHost) triggerHostTeamWipe("ERR_PREMATURE_CLICK", "OK was clicked before count finished.");
             }
             else if (act === 'err_meltdown') {
-                // VIOLENT SHAKE & WATERFALL CASCADE ON ALL SCREENS!
                 gameActive = false;
                 playGlitchScreech();
                 const popup = document.getElementById('hehe-popup');
@@ -996,8 +1008,6 @@
                     }
                 }, 70);
             }
-
-            // OTHER SHARED ACTIONS
             else if (act === 'stalker_swat') {
                 stalker.active = false;
                 playBeep(750, 0.15, 'sawtooth');
@@ -1168,7 +1178,7 @@
         }
 
         // ====================================================
-        //       LOCAL PLAYER CONTROLS & SPECTATING
+        //       LOCAL CONTROLS & INTERACTIONS
         // ====================================================
         window.addEventListener('keydown', e => {
             if (!isAlive) return;
@@ -1267,9 +1277,6 @@
             }
         }
 
-        // ====================================================
-        //       GAME ENGINE LOOP & JUICY RENDERING
-        // ====================================================
         let lastSnakeTick = 0;
         const tickRate = 110;
 
@@ -1420,7 +1427,7 @@
             }
         }
 
-        // --- FULL JUICY CANVAS RENDERING ---
+        // --- FULL ENGINE DRAW (IDENTICAL TO SINGLE PLAYER) ---
         function drawMultiplayer() {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
 
@@ -1526,7 +1533,7 @@
                 tCtx.fillRect(duck.x + 6, duck.y - 4 + wingBob, 12, 8);
             }
 
-            // Telefragger with Cyan Glitch Void Aura
+            // Telefragger
             if (telefragger.active) {
                 tCtx.fillStyle = "#00ffff";
                 tCtx.shadowColor = "#00ffff";
