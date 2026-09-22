@@ -1,0 +1,65 @@
+your-game-repo/
+│
+├── index.html                   (Single Player Story Mode & Custom Night)
+├── play.html                    (Multiplayer Co-Op Lobby & Game Engine)
+├── showcase.html                (Autopilot Bot / TAS Showcase Mode)
+├── server.js                    (Optional: Express server for Render deployment)
+├── package.json                 (Optional: Node dependencies for Render)
+│
+└── main/
+    └── assets/
+        ├── common/
+        │   ├── logo.png         (Your "Multi TASK" title logo!)
+        │   │
+        │   └── cursors/         (4-Player Custom Cursors & Placeholders)
+        │       ├── p1_cursor.svg (Player 1: Classic Retro White)
+        │       ├── p2_cursor.svg (Player 2: Cyber Cyan)
+        │       ├── p3_cursor.svg (Player 3: Hot Pink)
+        │       ├── p4_cursor.svg (Player 4: Arcade Orange)
+        │       └── ghost.svg     (Spectator Dead Cursor)
+        │
+        ├── level01/             (The Darkness)
+        │   └── apple.png
+        │
+        ├── level02/             (ERR Popup)
+        │   └── err_error.wav
+        │
+        ├── level03/             (Yellow Stalker)
+        │   └── stalker.png
+        │
+        ├── level04/             (Acid Rain)
+        │   ├── bucket.png
+        │   ├── raindrop.png
+        │   └── fry_buzz.wav
+        │
+        ├── level05/             (The Reader)
+        │   ├── reader_happy.png
+        │   ├── reader_annoyed.png
+        │   └── reader_enraged.png
+        │
+        ├── level06/             (Task Manager)
+        │   └── tab_icons.png
+        │
+        ├── level07/             (Realtek HD Audio)
+        │   ├── realtek_crab.png
+        │   └── loud_static.wav
+        │
+        ├── level08/             (Duck Hunt)
+        │   ├── duck.png
+        │   ├── dog_laugh.png    (Replaces the red box!)
+        │   ├── gunshot.wav
+        │   └── dog_laugh.wav
+        │
+        ├── level09/             (Pong.exe vs AI)
+        │   ├── paddle.png
+        │   └── pong_ball.png
+        │
+        ├── level10/             (Minesweeper)
+        │   ├── mine.png
+        │   ├── flag.png
+        │   └── boom.wav
+        │
+        └── level11/             (Telefragger from Nullscape)
+            ├── telefragger.png
+            ├── shine_hum.wav
+            └── telefrag_blast.wav
