@@ -26,14 +26,17 @@
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            width: 480px;
+            width: 520px;
+            max-height: 90vh;
             background: #ece9d8;
             border: 4px solid #000000;
             border-radius: 6px;
-            padding: 20px;
+            padding: 16px 20px;
             box-shadow: 6px 6px 0px #000000;
             text-align: center;
             z-index: 1000;
+            overflow-y: auto;
+            box-sizing: border-box;
         }
 
         #main-logo {
@@ -59,10 +62,10 @@
             font-weight: bold;
             font-size: 13px;
             color: #555;
-            margin-bottom: 15px;
+            margin-bottom: 12px;
         }
 
-        .form-group { margin-bottom: 12px; text-align: left; }
+        .form-group { margin-bottom: 10px; text-align: left; }
         .form-group label { display: block; font-size: 11px; font-weight: bold; color: #222; margin-bottom: 3px; font-family: monospace; }
         .form-input {
             width: 100%;
@@ -81,10 +84,10 @@
         .color-dot { width: 26px; height: 26px; border-radius: 3px; cursor: pointer; border: 2px solid #000; }
         .color-dot.selected { outline: 3px solid #000; transform: scale(1.15); }
 
-        .btn-row { display: flex; gap: 10px; margin-top: 15px; }
+        .btn-row { display: flex; gap: 10px; margin-top: 12px; }
         .lobby-btn {
             flex: 1;
-            padding: 10px;
+            padding: 8px 10px;
             font-size: 14px;
             font-family: Impact, sans-serif;
             letter-spacing: 1px;
@@ -96,37 +99,73 @@
         .lobby-btn:active { transform: translate(2px, 2px); box-shadow: 1px 1px 0px #000; }
         .btn-host { background: #ffaa00; color: black; }
         .btn-join { background: #3593ff; color: white; }
-        .btn-legacy { background: #ffffff; color: black; font-size: 13px; padding: 8px; box-shadow: 2px 2px 0px #000; }
+        .btn-legacy { background: #ffffff; color: black; font-size: 12px; padding: 6px; box-shadow: 2px 2px 0px #000; }
+        .btn-mode-toggle { background: #00ff88; color: black; width: 100%; margin: 8px 0; font-size: 13px; }
 
         /* 4-PLAYER SLOTS */
-        #room-screen { display: none; margin-top: 10px; }
+        #room-screen { display: none; margin-top: 5px; }
         .code-box {
-            font-size: 32px;
+            font-size: 28px;
             font-family: monospace;
             font-weight: bold;
             letter-spacing: 6px;
             color: #000;
             background: #fff;
-            padding: 6px;
+            padding: 4px;
             border: 2px solid #000;
-            margin: 10px 0;
+            margin: 6px 0;
         }
-        .slots-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin: 14px 0; }
+        .slots-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 6px; margin: 10px 0; }
         .player-slot {
             background: #ffffff;
             border: 2px solid #000000;
-            padding: 8px;
+            padding: 6px 8px;
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 6px;
             font-family: monospace;
             font-weight: bold;
-            font-size: 12px;
+            font-size: 11px;
             text-align: left;
             box-shadow: 2px 2px 0px #000;
         }
         .player-slot.empty { background: #dddddd; color: #888888; border-style: dashed; box-shadow: none; }
-        .slot-cursor-icon { width: 14px; height: 14px; border-radius: 2px; border: 1px solid #000; }
+        .slot-cursor-icon { width: 12px; height: 12px; border-radius: 2px; border: 1px solid #000; }
+
+        /* CUSTOM NIGHT THREAT CONFIG GRID */
+        #custom-roster-box {
+            display: none;
+            margin-top: 8px;
+            padding: 8px;
+            background: #e0dcc9;
+            border: 2px solid #000;
+        }
+        .roster-grid-mp {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 6px;
+            max-height: 200px;
+            overflow-y: auto;
+            padding: 4px;
+        }
+        .mp-card {
+            background: #fff;
+            border: 2px solid #000;
+            padding: 4px;
+            font-size: 10px;
+            font-family: monospace;
+            text-align: center;
+        }
+        .mp-card.active { background: #c6f8c6; border-color: #008820; }
+        .mp-card-title { font-weight: bold; margin-bottom: 2px; }
+        .mp-card-btn {
+            background: #eee;
+            border: 1px solid #000;
+            padding: 1px 6px;
+            font-size: 10px;
+            cursor: pointer;
+            font-weight: bold;
+        }
 
         /* 2. GAMEPLAY CANVAS & HUDS */
         #game-container {
@@ -148,7 +187,7 @@
             top: 48px;
             left: 20px;
             font-family: monospace;
-            font-size: 15px;
+            font-size: 14px;
             font-weight: bold;
             color: white;
             z-index: 100;
@@ -157,7 +196,6 @@
             border: 2px solid #fff;
         }
 
-        /* STRICTLY HIDDEN BY DEFAULT */
         #duck-hud {
             display: none;
             position: absolute;
@@ -213,9 +251,9 @@
             z-index: 2000;
         }
 
-        /* 3. WINDOWS XP DIALOGS (ALL STRICTLY HIDDEN BY DEFAULT!) */
+        /* 3. WINDOWS XP DIALOGS */
         .xp-window {
-            display: none; /* STRICTLY HIDDEN AT START! */
+            display: none;
             position: absolute;
             background: #ece9d8;
             border-radius: 8px 8px 0 0;
@@ -243,21 +281,14 @@
         .xp-button-row { display: flex; justify-content: center; gap: 15px; }
         .xp-btn { min-width: 75px; padding: 4px 14px; font-size: 12px; font-family: "Tahoma", sans-serif; background: #ece9d8; border: 1px solid #003c74; border-radius: 3px; box-shadow: inset 0 0 0 1px #fff; cursor: pointer; }
 
-        /* ERR WINDOW */
+        /* ERR */
         #hehe-popup { top: 45%; left: 50%; transform: translate(-50%, -50%); width: 440px; }
-        .err-countdown .xp-title-bar { background: linear-gradient(180deg, #008a20 0%, #2ecc71 40%, #008a20 100%) !important; }
+        .err-countdown .xp-title-bar { background: #008a20 !important; }
         .err-countdown .xp-text { color: #007718 !important; }
-        
-        .err-panic .xp-title-bar { background: linear-gradient(180deg, #b30000 0%, #ff3333 40%, #800000 100%) !important; }
+        .err-panic .xp-title-bar { background: #b30000 !important; }
         .err-panic .xp-body { background: #ffd6d6 !important; }
-        .err-panic .xp-text {
-            color: #cc0000 !important;
-            animation: textPulse 0.2s infinite alternate;
-        }
-        @keyframes textPulse {
-            from { transform: scale(1); }
-            to { transform: scale(1.1); }
-        }
+        .err-panic .xp-text { color: #cc0000 !important; animation: textPulse 0.2s infinite alternate; }
+        @keyframes textPulse { from { transform: scale(1); } to { transform: scale(1.1); } }
 
         .shake-crazy { animation: violentShake 0.05s infinite; }
         @keyframes violentShake {
@@ -269,15 +300,7 @@
         /* READER */
         #book-window { top: 20%; left: 15%; width: 260px; height: 160px; cursor: pointer !important; }
         #book-body { padding: 15px; height: calc(100% - 30px); display: flex; flex-direction: column; justify-content: center; align-items: center; background: #fffef2; font-size: 13px; text-align: center; pointer-events: none; }
-        #mood-dot {
-            width: 16px;
-            height: 16px;
-            border-radius: 50%;
-            background-color: #00ff00;
-            box-shadow: 0 0 10px #00ff00;
-            margin-right: 6px;
-            transition: background 0.2s;
-        }
+        #mood-dot { width: 16px; height: 16px; border-radius: 50%; background-color: #00ff00; box-shadow: 0 0 10px #00ff00; margin-right: 6px; transition: background 0.2s; }
 
         /* REALTEK */
         #realtek-window { top: 25%; right: 10%; width: 300px; border-color: #000; }
@@ -287,11 +310,7 @@
         .eq-bar { width: 8px; height: 10%; background: #00ff00; transition: height 0.08s ease; }
         .realtek-controls { display: flex; justify-content: space-between; align-items: center; }
         #mute-btn { background: #d8d4c0; border: 2px solid #000; padding: 4px 12px; font-weight: bold; font-size: 12px; cursor: pointer; }
-        #mute-btn.loud-alert {
-            background: #ff2222 !important;
-            color: white !important;
-            animation: textPulse 0.2s infinite alternate;
-        }
+        #mute-btn.loud-alert { background: #ff2222 !important; color: white !important; animation: textPulse 0.2s infinite alternate; }
 
         /* PONG */
         #pong-window { top: 40%; left: 20px; width: 200px; height: 180px; box-shadow: 0 0 15px rgba(0,255,136,0.3); }
@@ -370,7 +389,7 @@
             <span class="title-multi">Multi</span><span class="title-task">TASK</span>
         </div>
 
-        <div class="lobby-sub">[ MULTIPLAYER SURVIVAL (2 - 4P) ]</div>
+        <div class="lobby-sub">[ MULTIPLAYER CO-OP (2 - 4P) ]</div>
 
         <div id="join-controls">
             <div class="form-group">
@@ -398,23 +417,35 @@
                 <button class="lobby-btn btn-join" onclick="joinRoom()">JOIN ROOM</button>
             </div>
 
-            <div style="margin-top:16px; border-top: 2px dashed #999; padding-top: 14px;">
+            <div style="margin-top:14px; border-top: 2px dashed #999; padding-top: 12px;">
                 <a href="index.html" style="text-decoration:none;">
                     <button class="lobby-btn btn-legacy" style="width:100%;">💾 PLAY LEGACY BUILD (SOLO v0.1)</button>
                 </a>
             </div>
         </div>
 
-        <!-- 4 PLAYER LOBBY SLOTS -->
+        <!-- ROOM LOBBY SCREEN -->
         <div id="room-screen">
             <div style="font-size:12px; font-weight:bold; color:#333; font-family:monospace;">ROOM CODE:</div>
             <div class="code-box" id="display-room-code">----</div>
 
+            <!-- 4 PLAYER SLOTS -->
             <div class="slots-grid">
                 <div class="player-slot" id="slot-0"><div class="slot-cursor-icon" id="slot-color-0" style="background:#ffffff;"></div><span id="slot-name-0">P1: Host</span></div>
                 <div class="player-slot empty" id="slot-1"><div class="slot-cursor-icon" id="slot-color-1"></div><span id="slot-name-1">P2: Waiting...</span></div>
                 <div class="player-slot empty" id="slot-2"><div class="slot-cursor-icon" id="slot-color-2"></div><span id="slot-name-2">P3: Waiting...</span></div>
                 <div class="player-slot empty" id="slot-3"><div class="slot-cursor-icon" id="slot-color-3"></div><span id="slot-name-3">P4: Waiting...</span></div>
+            </div>
+
+            <!-- HOST MODE TOGGLE -->
+            <div id="host-controls-panel" style="display:none;">
+                <button class="lobby-btn btn-mode-toggle" id="mode-toggle-btn" onclick="toggleMultiplayerMode()">MODE: STORY GAUNTLET (1 - 11)</button>
+                
+                <!-- CUSTOM NIGHT ROSTER EXPANDABLE BOX -->
+                <div id="custom-roster-box">
+                    <div style="font-size:11px; font-weight:bold; font-family:monospace; margin-bottom:4px; color:#333;">TOGGLE ACTIVE THREATS (0 / 1):</div>
+                    <div class="roster-grid-mp" id="mp-roster-cards"></div>
+                </div>
             </div>
 
             <button id="start-game-btn" class="lobby-btn btn-host" style="display:none; width:100%; margin-top:10px;" onclick="broadcastStartGame()">START GAME</button>
@@ -425,7 +456,7 @@
     <!-- 2. GAMEPLAY AREA & ALL SHARED THREATS -->
     <div id="game-container">
         <div id="mp-hud">
-            LEVEL <span id="mp-level">1</span> | 
+            <span id="mp-mode-title">LEVEL 1</span> | 
             ALIVE: <span id="alive-count">1</span> | 
             APPLES: <span id="mp-apple-counter">0</span> / <span id="mp-apple-target">10</span>
         </div>
@@ -495,9 +526,10 @@
 
     <script>
         // ====================================================
-        //       ALL CORE THREAT STATES & PROPERTIES
+        //   ALL CORE STATE VARIABLES (INITIALIZED AT TOP)
         // ====================================================
         let currentLevel = 1;
+        let isCustomLobby = false; // Toggle between Story and Custom Night
         let totalApples = 10;
         let applesCollected = 0;
         let gameActive = false;
@@ -521,16 +553,17 @@
         const TARGET_TABS = 5;
         let activeTabs = ["snake.html", "realtek_hd", "duck_hunt", "coolmath", "subway.mp4"];
 
-        // FULL ERR RECOVERY STATE
-        let errState = {
-            active: false,
-            phase: 'idle',
-            target: 0,
-            count: 0,
-            isDown: false,
-            countingInterval: null,
-            panicTimeout: null
+        // Roster for Custom Night (0 = OFF, 1 = ON)
+        let roster = {
+            1: 1, 2: 1, 3: 1, 4: 1, 5: 1, 6: 1, 7: 1, 8: 1, 9: 1, 10: 1, 11: 1
         };
+        const threatNames = {
+            1: "Darkness", 2: "ERR", 3: "Stalker", 4: "Acid Rain", 5: "Reader",
+            6: "Task Mgr", 7: "Realtek", 8: "Duck Hunt", 9: "Pong.exe", 10: "Mines", 11: "Telefrag"
+        };
+
+        // Full ERR State
+        let errState = { active: false, phase: 'idle', target: 0, count: 0, isDown: false, countingInterval: null, panicTimeout: null };
 
         // PeerJS Networking Variables
         let peer = null;
@@ -646,7 +679,7 @@
             localStorage.setItem('snake_mp_name', myUsername);
         }
 
-        // --- NETWORKING ---
+        // --- HOST ROOM ---
         function hostRoom() {
             saveProfile();
             isHost = true;
@@ -657,6 +690,7 @@
             peer.on('open', id => {
                 showRoomScreen(roomCode);
                 document.getElementById('start-game-btn').style.display = 'block';
+                document.getElementById('host-controls-panel').style.display = 'block';
                 document.getElementById('waiting-msg').style.display = 'none';
 
                 players[myId] = {
@@ -669,6 +703,7 @@
                     alive: true
                 };
                 updateLobbySlots();
+                renderMpRosterCards();
             });
 
             peer.on('connection', conn => {
@@ -698,6 +733,7 @@
 
                 hostConn.on('open', () => {
                     showRoomScreen(inputCode);
+                    renderMpRosterCards(); // View only
                     hostConn.send({ type: 'join_handshake', name: myUsername, color: myColor });
                 });
                 hostConn.on('data', data => handleNetworkData(data, hostConn));
@@ -730,6 +766,55 @@
             }
         }
 
+        // ====================================================
+        //       CUSTOM NIGHT LOBBY CONFIGURATION
+        // ====================================================
+        function toggleMultiplayerMode() {
+            if (!isHost) return;
+            isCustomLobby = !isCustomLobby;
+            const btn = document.getElementById('mode-toggle-btn');
+            const box = document.getElementById('custom-roster-box');
+
+            if (isCustomLobby) {
+                btn.innerText = "MODE: CUSTOM NIGHT (SANDBOX)";
+                btn.style.background = "#ffaa00";
+                box.style.display = "block";
+            } else {
+                btn.innerText = "MODE: STORY GAUNTLET (1 - 11)";
+                btn.style.background = "#00ff88";
+                box.style.display = "none";
+            }
+
+            broadcast({ type: 'lobby_mode_sync', isCustomLobby: isCustomLobby, roster: roster });
+        }
+
+        function renderMpRosterCards() {
+            const container = document.getElementById('mp-roster-cards');
+            container.innerHTML = '';
+            for (let i = 1; i <= 11; i++) {
+                const card = document.createElement('div');
+                card.className = `mp-card ${roster[i] === 1 ? 'active' : ''}`;
+                card.id = `mp-card-${i}`;
+                card.innerHTML = `
+                    <div class="mp-card-title">#${i} ${threatNames[i]}</div>
+                    <div><span id="mp-val-${i}">${roster[i]}</span> ${isHost ? `<button class="mp-card-btn" onclick="toggleMpThreat(${i})">SWAP</button>` : ''}</div>
+                `;
+                container.appendChild(card);
+            }
+        }
+
+        function toggleMpThreat(id) {
+            if (!isHost) return;
+            roster[id] = roster[id] === 1 ? 0 : 1;
+
+            // #7 requires #5!
+            if (id === 7 && roster[7] === 1) roster[5] = 1;
+            if (id === 5 && roster[5] === 0 && roster[7] === 1) roster[7] = 0;
+
+            renderMpRosterCards();
+            broadcast({ type: 'lobby_mode_sync', isCustomLobby: isCustomLobby, roster: roster });
+        }
+
         function broadcast(msg) { connections.forEach(conn => conn.send(msg)); }
 
         function sendAction(actionName, extra = {}) {
@@ -752,11 +837,20 @@
                 };
                 updateLobbySlots();
                 broadcast({ type: 'lobby_sync', players: players });
+                // Send current mode config to new player
+                sender.send({ type: 'lobby_mode_sync', isCustomLobby: isCustomLobby, roster: roster });
             } else if (data.type === 'lobby_sync') {
                 players = data.players;
                 updateLobbySlots();
+            } else if (data.type === 'lobby_mode_sync') {
+                isCustomLobby = data.isCustomLobby;
+                roster = data.roster;
+                renderMpRosterCards();
+                document.getElementById('custom-roster-box').style.display = isCustomLobby ? 'block' : 'none';
             } else if (data.type === 'start_game') {
                 currentLevel = data.level;
+                isCustomLobby = data.isCustomLobby;
+                roster = data.roster;
                 totalApples = data.totalApples;
                 apples = data.apples;
                 initMultiplayerGame();
@@ -795,6 +889,8 @@
             const startPayload = {
                 type: 'start_game',
                 level: 1,
+                isCustomLobby: isCustomLobby,
+                roster: roster,
                 totalApples: totalApples,
                 apples: apples
             };
@@ -836,7 +932,13 @@
             document.getElementById('alive-count').innerText = aliveTotal;
             document.getElementById('mp-apple-counter').innerText = applesCollected;
             document.getElementById('mp-apple-target').innerText = totalApples;
-            document.getElementById('mp-level').innerText = currentLevel;
+            
+            if (isCustomLobby) {
+                const count = Object.values(roster).reduce((a,b)=>a+b,0);
+                document.getElementById('mp-mode-title').innerText = `CUSTOM CO-OP: ${count}/11 ACTIVE`;
+            } else {
+                document.getElementById('mp-mode-title').innerText = `LEVEL ${currentLevel}`;
+            }
         }
 
         // ====================================================
@@ -845,7 +947,7 @@
         function setupMultiplayerLevel(lvl) {
             currentLevel = lvl;
 
-            // 1. FIRST: HIDE ALL WINDOWS EXPLICITLY SO NOTHING LEAKS!
+            // HIDE ALL WINDOWS INITIALLY
             document.getElementById('hehe-popup').style.display = 'none';
             document.getElementById('book-window').style.display = 'none';
             document.getElementById('realtek-window').style.display = 'none';
@@ -860,36 +962,48 @@
             telefragger.active = false;
             if (rainDrop) rainDrop = null;
 
-            // 2. REVEAL ONLY WHAT CURRENT LEVEL UNLOCKS:
-            if (lvl >= 5) document.getElementById('book-window').style.display = 'block';
-            if (lvl >= 6) document.getElementById('tab-bar-container').style.display = 'flex';
-            if (lvl >= 7) document.getElementById('realtek-window').style.display = 'block';
-            if (lvl >= 8) document.getElementById('duck-hud').style.display = 'block';
-            if (lvl >= 9) {
+            // DETERMINE WHAT TO REVEAL:
+            const canDark = isCustomLobby ? roster[1] === 1 : lvl > 0;
+            const canErr = isCustomLobby ? roster[2] === 1 : lvl >= 2;
+            const canStalk = isCustomLobby ? roster[3] === 1 : lvl >= 3;
+            const canRain = isCustomLobby ? roster[4] === 1 : lvl >= 4;
+            const canBook = isCustomLobby ? roster[5] === 1 : lvl >= 5;
+            const canTabs = isCustomLobby ? roster[6] === 1 : lvl >= 6;
+            const canReal = isCustomLobby ? roster[7] === 1 : lvl >= 7;
+            const canDuck = isCustomLobby ? roster[8] === 1 : lvl >= 8;
+            const canPong = isCustomLobby ? roster[9] === 1 : lvl >= 9;
+            const canMine = isCustomLobby ? roster[10] === 1 : lvl >= 10;
+            const canTele = isCustomLobby ? roster[11] === 1 : lvl >= 11;
+
+            if (canBook) document.getElementById('book-window').style.display = 'block';
+            if (canTabs) document.getElementById('tab-bar-container').style.display = 'flex';
+            if (canReal) document.getElementById('realtek-window').style.display = 'block';
+            if (canDuck) document.getElementById('duck-hud').style.display = 'block';
+            if (canPong) {
                 document.getElementById('pong-window').style.display = 'block';
                 pong.active = true;
             }
 
-            // 3. HOST DISPATCHERS
+            // HOST STARTS ACTIVE THREAT DISPATCHERS
             if (isHost) {
-                if (lvl >= 2) scheduleHostErr();
-                if (lvl >= 3) setTimeout(spawnHostStalker, 2000);
-                if (lvl >= 5) hostStartReader();
-                if (lvl >= 6) hostStartTabs();
-                if (lvl >= 7) hostStartRealtek();
-                if (lvl >= 8) hostStartDuck();
-                if (lvl >= 9) hostStartPong();
-                if (lvl >= 10) hostStartMines();
-                if (lvl >= 11) hostStartTelefragger();
+                if (canErr) scheduleHostErr();
+                if (canStalk) setTimeout(spawnHostStalker, 2000);
+                if (canBook) hostStartReader();
+                if (canTabs) hostStartTabs();
+                if (canReal) hostStartRealtek();
+                if (canDuck) hostStartDuck();
+                if (canPong) hostStartPong();
+                if (canMine) hostStartMines();
+                if (canTele) hostStartTelefragger();
             }
         }
 
         // --- FULL ERR ENGINE RESTORED ---
         function scheduleHostErr() {
-            if (!gameActive || currentLevel < 2) return;
+            if (!gameActive) return;
             const delay = Math.random() * 4000 + 4500;
             setTimeout(() => {
-                if (gameActive && currentLevel >= 2) launchHostErr();
+                if (gameActive) launchHostErr();
             }, delay);
         }
 
@@ -1045,7 +1159,7 @@
         }
 
         function spawnHostStalker() {
-            if (!gameActive || currentLevel < 3) return;
+            if (!gameActive) return;
             stalker.active = true;
             stalker.x = Math.random() > 0.5 ? -20 : canvas.width + 20;
             stalker.y = Math.random() * canvas.height;
@@ -1053,7 +1167,7 @@
 
         function hostStartReader() {
             setInterval(() => {
-                if (!gameActive || currentLevel < 5 || moodState === 'red') return;
+                if (!gameActive || moodState === 'red') return;
                 moodState = 'red';
                 document.getElementById('mood-dot').style.backgroundColor = '#ff0000';
                 document.getElementById('mood-dot').style.boxShadow = '0 0 14px #ff0000';
@@ -1072,7 +1186,7 @@
         function hostStartTabs() {
             renderTabs();
             setInterval(() => {
-                if (!gameActive || currentLevel < 6) return;
+                if (!gameActive) return;
                 if (Math.random() > 0.5) activeTabs.push("popup_tab");
                 else if (activeTabs.length > 1) activeTabs.pop();
                 renderTabs();
@@ -1089,7 +1203,7 @@
 
         function hostStartRealtek() {
             setInterval(() => {
-                if (!gameActive || currentLevel < 7 || isAudioLoud) return;
+                if (!gameActive || isAudioLoud) return;
                 isAudioLoud = true;
                 updateRealtekUI(true);
                 startLoudAudioSound();
@@ -1106,7 +1220,7 @@
 
         function hostStartDuck() {
             setInterval(() => {
-                if (!gameActive || currentLevel < 8 || duck.active) return;
+                if (!gameActive || duck.active) return;
                 duck.active = true;
                 duck.x = -40;
                 duck.y = Math.random() * (canvas.height - 240) + 90;
@@ -1124,14 +1238,14 @@
 
         function hostStartMines() {
             setInterval(() => {
-                if (!gameActive || currentLevel < 10) return;
+                if (!gameActive) return;
                 mines.push({ x: Math.floor(Math.random() * (cols - 4)) + 2, y: Math.floor(Math.random() * (rows - 4)) + 2, flagged: false });
             }, 5000);
         }
 
         function hostStartTelefragger() {
             setInterval(() => {
-                if (!gameActive || currentLevel < 11 || telefragger.active) return;
+                if (!gameActive || telefragger.active) return;
                 const living = Object.keys(players).filter(id => players[id].alive);
                 if (living.length === 0) return;
 
@@ -1188,7 +1302,8 @@
             if ((key === 'a' || key === 'arrowleft') && myDir.x === 0) nextMyDir = { x: -1, y: 0 };
             if ((key === 'd' || key === 'arrowright') && myDir.x === 0) nextMyDir = { x: 1, y: 0 };
 
-            if (currentLevel >= 4) {
+            const canBucket = isCustomLobby ? roster[4] === 1 : currentLevel >= 4;
+            if (canBucket) {
                 if (key === 'q') { bucket.x = Math.max(0, bucket.x - 30); sendAction('bucket_move', { x: bucket.x }); }
                 if (key === 'e') { bucket.x = Math.min(canvas.width - bucket.width, bucket.x + 30); sendAction('bucket_move', { x: bucket.x }); }
             }
@@ -1229,7 +1344,8 @@
                 if (Math.sqrt(dx * dx + dy * dy) < 38) { sendAction('duck_shot'); return; }
             }
 
-            if (currentLevel >= 4 && mx >= bucket.x && mx <= bucket.x + bucket.width && my >= bucket.y && my <= bucket.y + bucket.height) {
+            const canBucket = isCustomLobby ? roster[4] === 1 : currentLevel >= 4;
+            if (canBucket && mx >= bucket.x && mx <= bucket.x + bucket.width && my >= bucket.y && my <= bucket.y + bucket.height) {
                 bucket.isDragging = true;
                 bucket.dragOffsetX = mx - bucket.x;
                 return;
@@ -1290,7 +1406,8 @@
             if (newHead.y < 0) newHead.y = rows - 1;
             if (newHead.y >= rows) newHead.y = 0;
 
-            if (currentLevel >= 10) {
+            const canMine = isCustomLobby ? roster[10] === 1 : currentLevel >= 10;
+            if (canMine) {
                 for (let m of mines) {
                     if (!m.flagged && m.x === newHead.x && m.y === newHead.y) {
                         playMineExplosion();
@@ -1300,7 +1417,8 @@
                 }
             }
 
-            if (stalker.active && currentLevel >= 3) {
+            const canStalk = isCustomLobby ? roster[3] === 1 : currentLevel >= 3;
+            if (stalker.active && canStalk) {
                 const dist = Math.sqrt(Math.pow(stalker.x - (newHead.x * GRID_SIZE), 2) + Math.pow(stalker.y - (newHead.y * GRID_SIZE), 2));
                 if (dist < 24) { handleLocalPlayerDeath("STALKER"); return; }
             }
@@ -1317,11 +1435,16 @@
 
                     if (applesCollected >= totalApples) {
                         if (isHost) {
-                            const nextLvl = currentLevel + 1;
-                            spawnApplesMultiplayer(totalApples);
-                            const advPayload = { type: 'level_advance', level: nextLvl, totalApples: totalApples, apples: apples };
-                            broadcast(advPayload);
-                            triggerLevelAdvance(nextLvl, totalApples, apples);
+                            if (isCustomLobby) {
+                                alert("🏆 SQUAD VICTORY! YOU SURVIVED THIS CUSTOM NIGHT!");
+                                location.reload();
+                            } else {
+                                const nextLvl = currentLevel + 1;
+                                spawnApplesMultiplayer(totalApples);
+                                const advPayload = { type: 'level_advance', level: nextLvl, totalApples: totalApples, apples: apples };
+                                broadcast(advPayload);
+                                triggerLevelAdvance(nextLvl, totalApples, apples);
+                            }
                         }
                     }
                 }
@@ -1373,7 +1496,8 @@
                 }
             }
 
-            if (currentLevel >= 4) {
+            const canRain = isCustomLobby ? roster[4] === 1 : currentLevel >= 4;
+            if (canRain) {
                 if (rainDrop === null && !rainCooldown) {
                     rainDrop = { x: Math.random() * (canvas.width - 80) + 40, y: -10, speed: 3.4 };
                 }
@@ -1427,7 +1551,6 @@
             }
         }
 
-        // --- FULL ENGINE DRAW (IDENTICAL TO SINGLE PLAYER) ---
         function drawMultiplayer() {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
 
@@ -1435,8 +1558,9 @@
             ctx.fillStyle = "#a82020";
             apples.forEach(a => { if (!a.collected) ctx.fillRect(a.x * GRID_SIZE + 2, a.y * GRID_SIZE + 2, GRID_SIZE - 4, GRID_SIZE - 4); });
 
-            // 2. Minesweeper Mines (Level 10)
-            if (currentLevel >= 10) {
+            // 2. Minesweeper Mines
+            const canMine = isCustomLobby ? roster[10] === 1 : currentLevel >= 10;
+            if (canMine) {
                 mines.forEach(m => {
                     const px = m.x * GRID_SIZE, py = m.y * GRID_SIZE;
                     ctx.fillStyle = "#c0c0c0";
@@ -1479,7 +1603,8 @@
             });
 
             // 4. Darkness Fog
-            if (currentLevel > 0 && isAlive) {
+            const canDark = isCustomLobby ? roster[1] === 1 : currentLevel > 0;
+            if (canDark && isAlive) {
                 const headX = mySnake[0].x * GRID_SIZE + (GRID_SIZE / 2);
                 const headY = mySnake[0].y * GRID_SIZE + (GRID_SIZE / 2);
                 let gradient = ctx.createRadialGradient(headX, headY, 20, headX, headY, 240);
@@ -1503,7 +1628,8 @@
             }
 
             // Bucket & Cyan Glowing Raindrop
-            if (currentLevel >= 4) {
+            const canBucket = isCustomLobby ? roster[4] === 1 : currentLevel >= 4;
+            if (canBucket) {
                 tCtx.fillStyle = bucket.isDragging ? "#ffffff" : "#a0a0a0";
                 tCtx.fillRect(bucket.x, bucket.y, bucket.width, bucket.height);
                 tCtx.fillStyle = "#222222";
